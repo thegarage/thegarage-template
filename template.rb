@@ -86,7 +86,7 @@ step 'Setup initial project Gemfile' do
   add_source "https://rubygems.org"
   insert_into_file 'Gemfile', "ruby '2.0.0'", after: "source .*\n"
 
-  gem 'rails', '4.0.0'
+  gem 'rails', '~> 4.0.1'
   gem 'jquery-rails'
   gem 'sass-rails', '~> 4.0.0'
   gem 'uglifier', '>= 1.3.0'
