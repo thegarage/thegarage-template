@@ -26,7 +26,7 @@ Generate new rails project, and the template will automatically prompt you
 to enter the relevant API Keys/Tokens for services and configure your app:
 
 ```
-$ rails new myapp -m https://raw.github.com/thegarage/rails-template/master/garage_composer.rb
+$ rails new myapp -m https://raw.github.com/thegarage/thegarage-template/master/template.rb
 $ cd myapp
 $ vagrant up --provision
 ```

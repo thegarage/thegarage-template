@@ -1192,5 +1192,5 @@ step 'Finalize initial project' do
   run_command 'bundle install --local'
   git :init
   git add: '.'
-  git commit: '-a -m "Initial checkin.  Built by the Garage Composer Rails template"'
+  git commit: '-a -m "Initial checkin.  Built by thegarage-template Rails Generator"'
 end
