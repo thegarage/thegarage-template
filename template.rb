@@ -316,7 +316,7 @@ chef_node_json = <<-EOS
     "enable_pgdg_apt": true,
     "dir": "/etc/postgresql/9.2/main",
     "password": {
-      "postgres": "somerandomgarbage"
+      "postgres": "SfhL1AB06mEXKnmq"
     },
     "client": {
       "packages": [
