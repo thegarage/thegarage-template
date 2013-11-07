@@ -1204,12 +1204,23 @@ config.action_mailer.smtp_settings = {
       address: ENV['SMTP_SERVER']
     }
 EOS
+email_no_errors_dev = <<-EOS
+# Don't care if the mailer can't send.
+  config.action_mailer.raise_delivery_errors = false
+EOS
+email_spec_matcher_setup = <<-EOS
+  config.include EmailSpec::Helpers
+  config.include EmailSpec::Matchers
+EOS
 step 'Implementing full e-mail support' do
   install_gem 'valid_email'
-  install_gem 'email_spec', groups: [:test]
+  install_gem 'email_spec', group: :test
   install_gem 'email_preview'
   append_to_file '.env', smtp_env
   environment smtp_applicationrb
+  environment email_no_errors_dev, env: :development
+  insert_into_file 'spec/spec_helper.rb', "require 'email_spec'\n", after: "require 'rspec/autorun'\n"
+  insert_into_file 'spec/spec_helper.rb', email_spec_matcher_setup, after: "# include extensions into rspec suite\n"
 end
 
 step 'Finalize initial project' do
