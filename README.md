@@ -9,6 +9,7 @@ Features
 * Full-featured continuous testing environment setup, with [RSpec](https://github.com/rspec/rspec-rails), [Jasmine](https://github.com/searls/jasmine-rails), [Guard](https://github.com/guard/guard), [Rubocop](https://github.com/bbatsov/rubocop), & [JSHintRB](https://github.com/stereobooster/jshintrb).
 * Service setup for [Travis-CI](https://travis-ci.org/), [New Relic](http://newrelic.com/), [Honeybadger](https://www.honeybadger.io/), even notifications to [Campfire](https://campfirenow.com/). Also, gem setup for [Heroku](https://www.heroku.com/).
 * Common convenience settings for most Rails apps, as well as environment settings for the four usual environments(Development, Test, Staging, Production).
+* Full e-mail setup and support, getting you ready for development with [Mailcatcher](https://github.com/sj26/mailcatcher) as a local send/recieve SMTP server, [E-mail Preview](https://github.com/wireframe/email_preview), and [testing helpers/matchers](https://github.com/bmabey/email-spec).
 
 Prerequisites
 -------------
@@ -66,6 +67,15 @@ We use Guard to keep all of the above going, every time we develop. No, really. 
 
 #### Pry
 We've included [Pry](http://pryrepl.org/) and [Pry-Remote](https://github.com/Mon-Ouie/pry-remote) for debugging. Pry gives some amazing debugging tools, and Pry-Remote makes them available from even browser requests.
+
+### Email
+After your `vagrant up --provision`, you can immediately see at [http://localhost:1080](http://localhost:1080) your Mailcatcher server. Any e-mails sent out from development mode will be caught here, for your review to be sure everything's working properly.
+
+#### E-mail Previews
+Once you begin making any e-mails, you can use [Email Preview](https://github.com/wireframe/email_preview#usage) to see how they look, with full styling and header information.
+
+#### E-mail Specs
+You can get a full list of Helpers/Matchers for the e-mail testing system we use from [the Email Spec README](https://github.com/bmabey/email-spec#rspec-1).
 
 Services
 --------

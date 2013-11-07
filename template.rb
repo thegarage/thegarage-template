@@ -28,7 +28,7 @@ end
 # gemfile/.lock/cache, and install it
 def install_gem(gem_name, options = {})
   if options[:group]
-    gem gem_name, group: options[:groups]
+    gem gem_name, group: options[:group]
   else
     gem gem_name
   end
@@ -99,7 +99,7 @@ step 'Setup initial project Gemfile' do
   run_command 'bundle package'
 
   create_file '.env', env
-  create_file '.ruby-version', 'ruby-2.0.0-p247'
+  create_file '.ruby-version', '2.0.0-p247'
   replace_file '.gitignore', gitignore
 end
 
@@ -218,6 +218,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.network :forwarded_port, guest: 3000, host: 3000 # development server
   config.vm.network :forwarded_port, guest: 5432, host: 5432 # postgresql
+  config.vm.network :forwarded_port, guest: 1080, host: 1080 # mailcatcher
+  config.vm.network :forwarded_port, guest: 1025, host: 1025 # mailcatcher
+
 
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
@@ -270,6 +273,7 @@ cookbook 'nginx'
 cookbook 'postgresql', git: 'https://github.com/thegarage/postgresql'
 cookbook 'git'
 cookbook 'nodejs'
+cookbook 'mailcatcher', git: 'https://github.com/thegarage/mailcatcher'
 cookbook 'set_locale', git: 'https://github.com/thegarage/set_locale'
 cookbook 'gemrc', git: 'https://github.com/wireframe/chef-gemrc'
 cookbook 'ruby_build', git: 'https://github.com/fnichol/chef-ruby_build'
@@ -312,7 +316,7 @@ chef_node_json = <<-EOS
     "enable_pgdg_apt": true,
     "dir": "/etc/postgresql/9.2/main",
     "password": {
-      "postgres": "#zmL4M!G9IN4iwYs"
+      "postgres": "postgres"
     },
     "client": {
       "packages": [
@@ -378,7 +382,8 @@ chef_node_json = <<-EOS
     "recipe[rbenv::user]",
     "recipe[nodejs]",
     "recipe[postgresql::server]",
-    "recipe[postgresql::contrib]"
+    "recipe[postgresql::contrib]",
+    "recipe[mailcatcher]"
   ]
 }
 EOS
@@ -414,7 +419,7 @@ step 'Setup Vagrant Virtual Machine' do
   create_file 'chef/roles/.gitkeep', ''
   create_file 'chef/data_bags/.gitkeep', ''
 
-  install_gem 'passenger', group: [:vm]
+  install_gem 'passenger', group: :vm
 end
 
 rspec_config_generators =  <<-EOS
@@ -444,7 +449,7 @@ rspec_extra_config = <<-EOS
 EOS
 
 step 'Add Rspec' do
-  remove_dir 'test/'
+  remove_dir 'test/' unless ARGV.include?("-T")
   install_gem 'rspec-rails', group: [:development, :test]
   generate 'rspec:install'
   insert_into_file 'Rakefile', "default_tasks << :spec\n\n", before: "task default: default_tasks"
@@ -453,10 +458,10 @@ step 'Add Rspec' do
   insert_into_file 'spec/spec_helper.rb', rspec_extra_config, after: /RSpec.configure do .*\n/i
   comment_lines 'spec/spec_helper.rb', /config.fixture_path.*/
 
-  install_gem 'shoulda-matchers', group: [:test]
+  install_gem 'shoulda-matchers', group: :test
 
   install_gem 'factory_girl_rails', group: [:development, :test]
-  install_gem 'factory_girl_rspec', group: [:test]
+  install_gem 'factory_girl_rspec', group: :test
 end
 
 simplecov = <<-EOS
@@ -469,7 +474,7 @@ simplecov_gitignore = <<-EOS
 coverage
 EOS
 step 'Add simplecov gem' do
-  install_gem 'simplecov', require: false, group: [:test]
+  install_gem 'simplecov', require: false, group: :test
   prepend_to_file 'spec/spec_helper.rb', simplecov
   append_to_file '.gitignore', simplecov_gitignore
 end
@@ -479,18 +484,18 @@ webrat_matcher_setup = <<-EOS
   config.include Webrat::Matchers
 EOS
 step 'Add Webrat gem' do
-  install_gem 'webrat', group: [:test]
+  install_gem 'webrat', group: :test
   insert_into_file 'spec/spec_helper.rb', "require 'webrat'\n", after: "require 'rspec/autorun'\n"
   insert_into_file 'spec/spec_helper.rb', webrat_matcher_setup, after: "c.syntax = :expect\n  end\n\n"
 end
 
 step 'Add should_not gem' do
-  install_gem 'should_not', group: [:test]
+  install_gem 'should_not', group: :test
   insert_into_file 'spec/spec_helper.rb', "require 'should_not/rspec'\n", after: "require 'rspec/autorun'\n"
 end
 
 step 'Add webmock gem' do
-  install_gem 'webmock', group: [:test]
+  install_gem 'webmock', group: :test
   insert_into_file 'spec/spec_helper.rb', "require 'webmock/rspec'\n", after: "require 'rspec/autorun'\n"
 end
 
@@ -502,7 +507,7 @@ VCR.configure do |c|
 end
 EOS
 step 'Add vcr gem' do
-  install_gem 'vcr', group: [:test]
+  install_gem 'vcr', group: :test
   insert_into_file 'spec/spec_helper.rb', "require 'vcr'\n", after: "require 'rspec/autorun'\n"
   append_to_file 'spec/spec_helper.rb', vcr_setup
 end
@@ -709,7 +714,7 @@ end
 
 EOS
 step 'Add bundler:audit Rake task' do
-  install_gem 'bundler-audit', group: [:test], require: false
+  install_gem 'bundler-audit', group: :test, require: false
   lib 'tasks/bundler_audit.rake', bundler_audit_rake
   insert_into_file 'Rakefile', "default_tasks << 'bundler:audit'\n\n", before: "task default: default_tasks"
 end
@@ -994,7 +999,7 @@ step 'Add Honeybadger gem' do
 end
 
 step 'Add Heroku 12factor gem' do
-  install_gem 'rails_12factor', group: [:production]
+  install_gem 'rails_12factor', group: :production
 end
 
 travisyml = <<-EOS
@@ -1017,13 +1022,13 @@ after_success:
 
 EOS
 step 'Add Travis CI' do
-  install_gem 'travis', group: [:development]
+  install_gem 'travis', group: :development
   create_file '.travis.yml', travisyml
   append_to_file '.travis.yml', travis_campfire_config if travis_campfire_config
 end
 
 step 'Add guard-rspec gem' do
-  install_gem 'guard-rspec', group: [:ct]
+  install_gem 'guard-rspec', group: :ct
   run_command 'guard init rspec'
   gsub_file 'Guardfile', /  # Capybara features specs.*\z/m, "end\n"
 end
@@ -1039,17 +1044,17 @@ guard :rubocop, all_on_start: false, cli: ['--rails'] do
 end
 EOS
 step 'Add guard-rubocop gem' do
-  install_gem 'guard-rubocop', group: [:ct]
+  install_gem 'guard-rubocop', group: :ct
   append_to_file 'Guardfile', rubocop_guardfile
 end
 
 step 'Add guard-jshintrb gem' do
-  install_gem 'guard-jshintrb', group: [:ct]
+  install_gem 'guard-jshintrb', group: :ct
   run_command 'guard init jshintrb'
 end
 
 step 'Add guard-pow gem' do
-  install_gem 'guard-pow', group: [:ct]
+  install_gem 'guard-pow', group: :ct
   run_command 'guard init pow'
 end
 
@@ -1062,7 +1067,7 @@ guard 'jasmine-rails', all_on_start: false do
 end
 EOS
 step 'Add guard-jasmine-rails gem' do
-  install_gem 'guard-jasmine-rails', group: [:ct]
+  install_gem 'guard-jasmine-rails', group: :ct
   append_to_file 'Guardfile', jasmine_rails_guardfile
 end
 
@@ -1186,6 +1191,31 @@ EOS
 step 'Moving secret key to .env file' do
   gsub_file 'config/initializers/secret_token.rb', / =.*/, " = ENV['SECRET_KEY_BASE']"
   append_to_file '.env', env_secret_token
+end
+
+smtp_env = <<-EOS
+#SMTP settings
+SMTP_PORT=1025
+SMTP_SERVER=localhost
+EOS
+smtp_applicationrb = <<-EOS
+config.action_mailer.smtp_settings = {
+      port: ENV['SMTP_PORT'],
+      address: ENV['SMTP_SERVER']
+    }
+EOS
+email_spec_matcher_setup = <<-EOS
+  config.include EmailSpec::Helpers
+  config.include EmailSpec::Matchers
+EOS
+step 'Implementing full e-mail support' do
+  install_gem 'valid_email'
+  install_gem 'email_spec', group: :test
+  install_gem 'email_preview'
+  append_to_file '.env', smtp_env
+  environment smtp_applicationrb
+  insert_into_file 'spec/spec_helper.rb', "require 'email_spec'\n", after: "require 'rspec/autorun'\n"
+  insert_into_file 'spec/spec_helper.rb', email_spec_matcher_setup, after: "# include extensions into rspec suite\n"
 end
 
 step 'Finalize initial project' do
