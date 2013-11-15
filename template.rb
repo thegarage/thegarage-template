@@ -1032,6 +1032,7 @@ step 'Add guard-rspec gem' do
   install_gem 'guard-rspec', group: :ct
   run_command 'guard init rspec'
   gsub_file 'Guardfile', /  # Capybara features specs.*\z/m, "end\n"
+  run_command 'bundle binstubs guard'
 end
 
 rubocop_guardfile = <<'EOS'
