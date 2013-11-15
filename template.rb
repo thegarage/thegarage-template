@@ -518,6 +518,7 @@ AllCops:
     - 'db/schema.rb'
     - 'vendor/*'
     - 'chef/*'
+    - 'bin/*'
 
 # Allow longer lines
 LineLength:
