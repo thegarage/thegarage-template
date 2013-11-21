@@ -350,6 +350,7 @@ chef_node_json = <<-EOS
   },
 
   "rbenv": {
+    "git_url": "https://github.com/sstephenson/rbenv.git",
     "user_installs": [
       {
         "user": "vagrant",
@@ -368,7 +369,7 @@ chef_node_json = <<-EOS
 
   "nodejs": {
     "version": "0.10.15",
-    "install_method": "package"
+    "install_method": "binary"
   },
 
   "run_list": [
