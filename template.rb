@@ -99,7 +99,7 @@ step 'Setup initial project Gemfile' do
   run_command 'bundle package'
 
   create_file '.env', env
-  create_file '.ruby-version', '2.0.0-p247'
+  create_file '.ruby-version', '2.0.0-p353'
   replace_file '.gitignore', gitignore
 end
 
@@ -355,11 +355,11 @@ chef_node_json = <<-EOS
       {
         "user": "vagrant",
         "rubies": [
-          "2.0.0-p247"
+          "2.0.0-p353"
         ],
-        "global": "2.0.0-p247",
+        "global": "2.0.0-p353",
         "gems": {
-          "2.0.0-p247": [
+          "2.0.0-p353": [
             {"name": "bundler"}
           ]
         }
@@ -1008,7 +1008,7 @@ travisyml = <<-EOS
 language: ruby
 bundler_args: --local --without development vm ct console debug
 rvm:
-  - ruby-2.0.0-p247
+  - ruby-2.0.0-p353
 env:
   - BUNDLER_INCLUDE_DEBUG_GROUP=false
 
