@@ -441,7 +441,7 @@ step 'Adding Puma as default appserver' do
   install_gem 'foreman', group: :development
   install_gem 'puma'
   get_file 'bin/restart'
-  chmod 'bin/restart', '755'
+  chmod 'bin/restart', 0755
   get_file 'Procfile'
 
   append_to_file '.env', env_appserver_port
