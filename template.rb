@@ -41,7 +41,7 @@ end
 
 # download remote file from remote repo and save to local path
 def get_file(path)
-  resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, path)
+  resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', path)
   puts "Downloading resource: #{resource}"
   get resource, path
 end
