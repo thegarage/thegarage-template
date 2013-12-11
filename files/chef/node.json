@@ -1,0 +1,79 @@
+{
+  "build-essential": {},
+
+  "postgresql": {
+    "version": "9.2",
+    "enable_pgdg_apt": true,
+    "dir": "/etc/postgresql/9.2/main",
+    "password": {
+      "postgres": "postgres"
+    },
+    "client": {
+      "packages": [
+        "postgresql-client-9.2"
+      ]
+    },
+    "server": {
+      "packages": [
+        "postgresql-9.2",
+        "postgresql-server-dev-9.2"
+      ]
+    },
+    "contrib": {
+      "packages": [
+        "postgresql-contrib-9.2"
+      ]
+    },
+    "config": {
+      "listen_addresses": "*",
+      "lc_messages": "en_US.UTF-8",
+      "lc_monetary": "en_US.UTF-8",
+      "lc_numeric": "en_US.UTF-8",
+      "lc_time": "en_US.UTF-8",
+      "ssl_key_file": "/etc/ssl/private/ssl-cert-snakeoil.key",
+      "ssl_cert_file": "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+    },
+    "pg_hba": [
+      {"type": "host", "db": "all", "user": "all", "addr": "127.0.0.1/32", "method": "trust"},
+      {"type": "host", "db": "all", "user": "all", "addr": "0.0.0.0/0", "method": "trust"}
+    ]
+  },
+
+  "rbenv": {
+    "git_url": "https://github.com/sstephenson/rbenv.git",
+    "user_installs": [
+      {
+        "user": "vagrant",
+        "rubies": [
+          "2.0.0-p247"
+        ],
+        "global": "2.0.0-p247",
+        "gems": {
+          "2.0.0-p247": [
+            {"name": "bundler"}
+          ]
+        }
+      }
+    ]
+  },
+
+  "nodejs": {
+    "version": "0.10.15",
+    "install_method": "binary"
+  },
+
+  "run_list": [
+    "recipe[set_locale]",
+    "recipe[gemrc]",
+    "recipe[apt]",
+    "recipe[git]",
+    "recipe[build-essential]",
+    "recipe[curl]",
+    "recipe[ruby_build]",
+    "recipe[rbenv::user]",
+    "recipe[nodejs]",
+    "recipe[postgresql::server]",
+    "recipe[postgresql::contrib]",
+    "recipe[mailcatcher]"
+  ]
+}

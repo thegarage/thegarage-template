@@ -1,0 +1,43 @@
+AllCops:
+  Excludes:
+    - 'db/schema.rb'
+    - 'vendor/*'
+    - 'chef/*'
+    - 'bin/*'
+
+# Allow longer lines
+LineLength:
+  Max: 190
+
+# Allow methods longer than 10 lines of code
+MethodLength:
+  Max: 20
+
+# Do not force classes/modules to have documentation
+Documentation:
+  Enabled: false
+
+# Allow extend self for modules
+ModuleFunction:
+  Enabled: false
+
+# disable cop for indentation of if/end blocks
+# ex:
+# foo = if false
+#   'bar'
+# else
+#   'baz'
+# end
+EndAlignment:
+  Enabled: false
+
+
+# disable cop for indentation of body of if blocks
+# ex:
+# foo = if false
+#   'bar'
+# else
+#   'baz'
+# end
+IndentationWidth:
+  Enabled: false

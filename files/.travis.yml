@@ -1,0 +1,16 @@
+language: ruby
+bundler_args: --local --without development vm ct console debug
+rvm:
+  - ruby-2.0.0-p353
+env:
+  - BUNDLER_INCLUDE_DEBUG_GROUP=false
+
+branches:
+  except:
+    - /build-.+-\d{4}-\d{2}-\d{2}-.*/
+
+# create git tag to support quick rollback to last known good state
+after_success:
+  - git config --global user.email "builds@travis-ci.com"
+  - git config --global user.name "Travis CI"
+  - git buildtag
