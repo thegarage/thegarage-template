@@ -1,0 +1,4 @@
+ #!/bin/bash
+
+ # Restart development server upstart jobs
+ vagrant ssh -c 'sudo restart app'

@@ -1,3 +1,6 @@
+TEMPLATE_HOST = ENV.fetch('TEMPLATE_HOST', 'https://raw.github.com/thegarage/thegarage-template')
+TEMPLATE_BRANCH = ENV.fetch('TEMPLATE_BRANCH', 'master')
+
 # helper method to wrap a chunk of code
 # with consistent output + a git commit message
 def step(message)
@@ -34,6 +37,13 @@ def install_gem(gem_name, options = {})
   end
   run_command "gem install #{gem_name}"
   run_command 'bundle install --local'
+end
+
+# download remote file from remote repo and save to local path
+def get_file(path)
+  resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', path)
+  puts "Downloading resource: #{resource}"
+  get resource, path
 end
 
 # Asking for sensitive information to be used later.
@@ -402,10 +412,11 @@ cd /vagrant
 bundle install --local
 bundle exec rake db:reset
 bundle exec rake db:test:clone
-bundle exec passenger start -d
-sudo /sbin/initctl emit provisioned
+sudo bundle exec foreman export upstart /etc/init --user vagrant
 ACTIONS
 
+/sbin/initctl emit provisioned
+start app
 EOS
 
 step 'Setup Vagrant Virtual Machine' do
@@ -419,8 +430,21 @@ step 'Setup Vagrant Virtual Machine' do
 
   create_file 'chef/roles/.gitkeep', ''
   create_file 'chef/data_bags/.gitkeep', ''
+end
 
-  install_gem 'passenger', group: :vm
+env_appserver_port = <<-EOS
+# options for appserver
+PORT=3000
+
+EOS
+step 'Adding Puma as default appserver' do
+  install_gem 'foreman', group: :development
+  install_gem 'puma'
+  get_file 'bin/restart'
+  chmod 'bin/restart', 0755
+  get_file 'Procfile'
+
+  append_to_file '.env', env_appserver_port
 end
 
 rspec_config_generators =  <<-EOS
@@ -1054,11 +1078,6 @@ end
 step 'Add guard-jshintrb gem' do
   install_gem 'guard-jshintrb', group: :ct
   run_command 'guard init jshintrb'
-end
-
-step 'Add guard-pow gem' do
-  install_gem 'guard-pow', group: :ct
-  run_command 'guard init pow'
 end
 
 jasmine_rails_guardfile = <<'EOS'
