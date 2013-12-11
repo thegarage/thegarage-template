@@ -3,7 +3,7 @@
 ## Step 1:  Create feature branch...
 
 Always create a feature branch off of a freshly updated version of master.
-Use the socialcast-git-extensions `start` command to simplify the process.
+Use the thegarage-gitx `start` command to simplify the process.
 
 ```
 $ git start my-feature-branch
@@ -56,7 +56,7 @@ $ git reviewrequest
 * (optional) Smoketest changes in staging environment (via `git integrate staging`)
 * Ensure that build is green (local build + travis-ci and/or deploy to staging environment)
 
-Use socialcast-git-extensions `release` command to automate the process.
+Use thegarage-gitx `release` command to automate the process.
 
 ```
 $ git release
