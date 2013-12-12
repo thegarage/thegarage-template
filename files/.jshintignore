@@ -1,0 +1,4 @@
+spec/tmp/**/*.js
+vendor/**/*.js
+coverage/**/*.js
+tmp/**/*.js

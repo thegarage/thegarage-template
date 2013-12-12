@@ -1,0 +1,23 @@
+default: &default
+  adapter: postgresql
+  host: localhost
+  username: 'postgres'
+
+development:
+  <<: *default
+  database: <%= app_name.parameterize %>-dev
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test: &test
+  <<: *default
+  database: <%= app_name.parameterize %>-test
+
+staging:
+  <<: *default
+  database: <%= app_name.parameterize %>-stage
+
+production:
+  <<: *default
+  database: <%= app_name.parameterize %>-prod
