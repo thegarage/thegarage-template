@@ -59,6 +59,39 @@ def get_file(path)
   end
 end
 
+# insert content into existing file
+# automatically add newlines before/after content
+# supports matching indentation of matched line
+def insert_lines_into_file(path, content, options = {})
+  target_line = options[:before] || options[:after]
+  target_line = Regexp.escape(target_line) unless target_line.is_a?(Regexp)
+  target_line = /#{target_line}.*\n/
+  options[:before] = target_line if options[:before]
+  options[:after] = target_line if options[:after]
+  indent = ''
+  File.open(path, 'r') do |file|
+    file.each_line(path) do |line|
+      if line =~ target_line
+        indent = line.scan(/^\s+/).first
+      end
+    end
+  end
+  indent ||= ''
+  indent.chomp!
+
+  if options[:indent].to_i > 0
+    indent += (' ' * options[:indent].to_i)
+  end
+
+  indented_content = ''
+  content.each_line do |line|
+    indented_content += (indent + line)
+  end
+  indented_content += "\n"
+
+  insert_into_file path, indented_content, options
+end
+
 # Asking for sensitive information to be used later.
 newrelic_key = ask("What is your NewRelic license key(enter nothing if you don't have one)?")
 
@@ -81,7 +114,7 @@ end
 step 'Setup initial project Gemfile' do
   replace_file 'Gemfile', ''
   add_source "https://rubygems.org"
-  insert_into_file 'Gemfile', "ruby '2.0.0'", after: "source .*\n"
+  insert_lines_into_file 'Gemfile', "ruby '2.0.0'", after: /^source /
 
   gem 'rails', '~> 4.0.1'
   gem 'jquery-rails'
@@ -140,7 +173,6 @@ step 'Add lib/autoloaded to autoload_paths' do
 end
 
 bundler_groups_applicationrb = <<-EOS
-
 # Delay requiring debug group until dotenv-rails has been required
 # which loads the necessary ENV variables
 Bundler.require(:debug) if %w{ development test }.include?(Rails.env) && ENV['BUNDLER_INCLUDE_DEBUG_GROUP'] == 'true'
@@ -155,7 +187,7 @@ step 'Add debug Bundler group' do
   install_gem 'pry-remote', group: :debug
 
   append_to_file '.env', env_bundler_include_debug_group
-  insert_into_file 'config/application.rb', bundler_groups_applicationrb, after: /Bundler\.require.*\n/
+  insert_lines_into_file 'config/application.rb', bundler_groups_applicationrb, after: 'Bundler.require'
 end
 
 step 'Disable config.assets.debug in development environment' do
@@ -210,31 +242,29 @@ config.generators do |g|
     end
 EOS
 rspec_base_config = <<-EOS
-
-  config.treat_symbols_as_metadata_keys_with_true_values = true
-  config.filter_run focus: true
-  config.run_all_when_everything_filtered = true
+# add support for focused specs with focus: true option
+config.treat_symbols_as_metadata_keys_with_true_values = true
+config.filter_run focus: true
+config.run_all_when_everything_filtered = true
 EOS
 rspec_extra_config = <<-EOS
+# enable controller tests to render views
+config.render_views
 
-  # enable controller tests to render views
-  config.render_views
-
-  # disable foo.should == bar syntax
-  config.expect_with :rspec do |c|
-    c.syntax = :expect
-  end
-
+# disable foo.should == bar syntax
+config.expect_with :rspec do |c|
+  c.syntax = :expect
+end
 EOS
 
 step 'Add Rspec' do
   remove_dir 'test/' unless ARGV.include?("-T")
   install_gem 'rspec-rails', group: [:development, :test]
   generate 'rspec:install'
-  insert_into_file 'Rakefile', "default_tasks << :spec\n\n", before: "task default: default_tasks"
+  insert_lines_into_file 'Rakefile', "default_tasks << :spec", before: "task default: default_tasks"
   environment rspec_config_generators
-  insert_into_file 'spec/spec_helper.rb', rspec_base_config, after: /RSpec.configure do .*\n/i
-  insert_into_file 'spec/spec_helper.rb', rspec_extra_config, after: /RSpec.configure do .*\n/i
+  insert_lines_into_file 'spec/spec_helper.rb', rspec_base_config, indent: 2, after: "RSpec.configure do"
+  insert_lines_into_file 'spec/spec_helper.rb', rspec_extra_config, indent: 2, after: "RSpec.configure do"
   comment_lines 'spec/spec_helper.rb', /config.fixture_path.*/
 
   install_gem 'shoulda-matchers', group: :test
@@ -259,23 +289,22 @@ step 'Add simplecov gem' do
 end
 
 webrat_matcher_setup = <<-EOS
-  # include extensions into rspec suite
-  config.include Webrat::Matchers
+config.include Webrat::Matchers
 EOS
 step 'Add Webrat gem' do
   install_gem 'webrat', group: :test
-  insert_into_file 'spec/spec_helper.rb', "require 'webrat'\n", after: "require 'rspec/autorun'\n"
-  insert_into_file 'spec/spec_helper.rb', webrat_matcher_setup, after: "c.syntax = :expect\n  end\n\n"
+  insert_lines_into_file 'spec/spec_helper.rb', "require 'webrat'", after: "require 'rspec/autorun'"
+  insert_lines_into_file 'spec/spec_helper.rb', webrat_matcher_setup, indent: 2, after: /config.use_transactional_fixtures /
 end
 
 step 'Add should_not gem' do
   install_gem 'should_not', group: :test
-  insert_into_file 'spec/spec_helper.rb', "require 'should_not/rspec'\n", after: "require 'rspec/autorun'\n"
+  insert_lines_into_file 'spec/spec_helper.rb', "require 'should_not/rspec'", after: "require 'rspec/autorun'"
 end
 
 step 'Add webmock gem' do
   install_gem 'webmock', group: :test
-  insert_into_file 'spec/spec_helper.rb', "require 'webmock/rspec'\n", after: "require 'rspec/autorun'\n"
+  insert_lines_into_file 'spec/spec_helper.rb', "require 'webmock/rspec'", after: "require 'rspec/autorun'"
 end
 
 vcr_setup = <<-EOS
@@ -287,7 +316,7 @@ end
 EOS
 step 'Add vcr gem' do
   install_gem 'vcr', group: :test
-  insert_into_file 'spec/spec_helper.rb', "require 'vcr'\n", after: "require 'rspec/autorun'\n"
+  insert_lines_into_file 'spec/spec_helper.rb', "require 'vcr'", after: "require 'rspec/autorun'"
   append_to_file 'spec/spec_helper.rb', vcr_setup
 end
 
@@ -299,11 +328,10 @@ if defined?(Rubocop)
   end
   default_tasks << :rubocop
 end
-
 EOS
 step 'Add Rubocop gem' do
   install_gem 'rubocop', group: [:development, :test]
-  insert_into_file 'Rakefile', rubocop_rake, before: "task default: default_tasks"
+  insert_lines_into_file 'Rakefile', rubocop_rake, before: "task default: default_tasks"
   get_file '.rubocop.yml'
 end
 
@@ -311,7 +339,6 @@ jasmine_rake = <<-EOS
 if defined?(JasmineRails)
   default_tasks << 'spec:javascript'
 end
-
 EOS
 jasmine_gitignore = <<-EOS
 # jasmine-rails files
@@ -321,7 +348,7 @@ EOS
 step 'Add jasmine-rails gem' do
   install_gem 'jasmine-rails', group: [:development, :test]
   route "mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)"
-  insert_into_file 'Rakefile', jasmine_rake, before: "task default: default_tasks"
+  insert_lines_into_file 'Rakefile', jasmine_rake, before: "task default: default_tasks"
   append_to_file '.gitignore', jasmine_gitignore
   get_file 'spec/javascripts/support/jasmine.yml'
 end
@@ -341,13 +368,12 @@ if defined?(Jshintrb)
   end
   default_tasks << :jshint
 end
-
 EOS
 step 'Add jshintrb gem' do
   install_gem 'jshintrb', group: [:development, :test]
   get_file '.jshintrc'
   get_file '.jshintignore'
-  insert_into_file 'Rakefile', jshintrb_rake, before: "task default: default_tasks"
+  insert_lines_into_file 'Rakefile', jshintrb_rake, before: "task default: default_tasks"
 end
 
 brakeman_task = <<-EOS
@@ -368,7 +394,7 @@ end
 EOS
 step 'Add brakeman:run Rake task' do
   install_gem 'brakeman'
-  insert_into_file 'Rakefile', "default_tasks << 'brakeman:run'\n\n", before: "task default: default_tasks"
+  insert_lines_into_file 'Rakefile', "default_tasks << 'brakeman:run'", before: "task default: default_tasks"
   lib 'tasks/brakeman.rake', brakeman_task
 end
 
@@ -389,7 +415,7 @@ EOS
 step 'Add bundler:audit Rake task' do
   install_gem 'bundler-audit', group: :test, require: false
   lib 'tasks/bundler_audit.rake', bundler_audit_rake
-  insert_into_file 'Rakefile', "default_tasks << 'bundler:audit'\n\n", before: "task default: default_tasks"
+  insert_lines_into_file 'Rakefile', "default_tasks << 'bundler:audit'", before: "task default: default_tasks"
 end
 
 bundler_outdated_rake = <<-EOS
@@ -405,7 +431,7 @@ end
 EOS
 step 'Add bundler:outdated Rake task' do
   lib 'tasks/bundler_outdated.rake', bundler_outdated_rake
-  insert_into_file 'Rakefile', "default_tasks << 'bundler:outdated'\n\n", before: "task default: default_tasks"
+  insert_lines_into_file 'Rakefile', "default_tasks << 'bundler:outdated'", before: "task default: default_tasks"
 end
 
 newrelic_env = <<-EOS
@@ -539,8 +565,8 @@ config.action_mailer.smtp_settings = {
     }
 EOS
 email_spec_matcher_setup = <<-EOS
-  config.include EmailSpec::Helpers
-  config.include EmailSpec::Matchers
+config.include EmailSpec::Helpers
+config.include EmailSpec::Matchers
 EOS
 step 'Implementing full e-mail support' do
   install_gem 'valid_email'
@@ -548,8 +574,8 @@ step 'Implementing full e-mail support' do
   install_gem 'email_preview'
   append_to_file '.env', smtp_env
   environment smtp_applicationrb
-  insert_into_file 'spec/spec_helper.rb', "require 'email_spec'\n", after: "require 'rspec/autorun'\n"
-  insert_into_file 'spec/spec_helper.rb', email_spec_matcher_setup, after: "# include extensions into rspec suite\n"
+  insert_lines_into_file 'spec/spec_helper.rb', "require 'email_spec'", after: "require 'rspec/autorun'"
+  insert_lines_into_file 'spec/spec_helper.rb', email_spec_matcher_setup, after: /config.use_transactional_fixtures /
 end
 
 step 'Finalize initial project' do
