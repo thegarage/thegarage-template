@@ -214,21 +214,6 @@ step 'Setting up Vagrant Virtual Machine' do
   preserve_directory 'chef/data_bags'
 end
 
-env_appserver_port = <<-EOS
-# options for appserver
-PORT=3000
-
-EOS
-step 'Adding Puma as default appserver' do
-  install_gem 'foreman', group: :development
-  install_gem 'puma'
-  get_file 'bin/restart'
-  chmod 'bin/restart', 0755
-  get_file 'Procfile'
-
-  append_to_file '.env', env_appserver_port
-end
-
 rspec_config_generators =  <<-EOS
 config.generators do |g|
       g.view_specs false
@@ -514,6 +499,35 @@ EOS
 step 'Adding continuous testing for javascript testsuite (Guard::JasmineRails)' do
   install_gem 'guard-jasmine-rails', group: :ct
   append_to_file 'Guardfile', jasmine_rails_guardfile
+end
+
+server_restart_guardfile = <<'EOS'
+guard :sheller, command: './bin/restart' do
+  watch('.env')
+  watch('.ruby-version')
+  watch('Gemfile')
+  watch('Gemfile.lock')
+  watch('config/application.rb')
+  watch('config/environment.rb')
+  watch(%r{^config/environments/.*\.rb$})
+  watch(%r{^config/initializers/.*\.rb$})
+end
+EOS
+env_appserver_port = <<-EOS
+# options for appserver
+PORT=3000
+
+EOS
+step 'Adding Puma as default appserver' do
+  install_gem 'foreman', group: :development
+  install_gem 'puma'
+  get_file 'bin/restart'
+  chmod 'bin/restart', 0755
+  get_file 'Procfile'
+  install_gem 'guard-sheller', group: :ct
+
+  append_to_file '.env', env_appserver_port
+  append_to_file 'Guardfile', server_restart_guardfile
 end
 
 step 'Adding project documentation' do
