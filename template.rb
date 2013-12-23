@@ -373,7 +373,7 @@ step 'Addressing brakeman security vulnerability: Moving secret key to .env file
   gsub_file 'config/initializers/secret_token.rb', / =.*/, " = ENV['SECRET_KEY_BASE']"
 
   require 'securerandom'
-  secret_key_base = SecureRandom.hex(64)
+  SECRET_KEY_BASE = SecureRandom.hex(64)
   append_to_file '.env', get_file_partial(:brakeman, '.env')
 end
 
