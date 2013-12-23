@@ -106,23 +106,17 @@ def insert_lines_into_file(path, content, options = {})
   insert_into_file path, indented_content, options
 end
 
-# Asking for sensitive information to be used later.
-newrelic_key = ask("What is your NewRelic license key(enter nothing if you don't have one)?")
-
-honeybadger_api_key = ask("What is your Honeybadger API key(enter nothing if you don't have one)?")
-
-travis_campfire_config = if yes?("Do you want TravisCI Campfire Notifications?")
-  travis_campfire_subdomain = ask("What's your Campfire subdomain?")
-  travis_campfire_api_key = ask("What is your API key?")
-  travis_campfire_room_id = ask("What is your Campfire room ID(not the name)?")
-  <<-EOS.strip_heredoc
-    notifications:
-      campfire: #{travis_campfire_subdomain}:#{travis_campfire_api_key}@#{travis_campfire_room_id}
-      on_success: change
-      on_failure: always
-  EOS
-else
-  nil
+step 'Prompting for configurable settings' do
+  NEWRELIC_KEY = ask("What is your NewRelic license key(enter nothing if you don't have one)?")
+  HONEYBADGER_API_KEY = ask("What is your Honeybadger API key(enter nothing if you don't have one)?")
+  TRAVIS_CAMPFILE_CONFIG = if yes?("Do you want TravisCI Campfire Notifications?")
+    TRAVIS_CAMPFIRE_SUBDOMAIN = ask("What's your Campfire subdomain?")
+    TRAVIS_CAMPFIRE_API_KEY = ask("What is your API key?")
+    TRAVIS_CAMPFIRE_ROOM_ID = ask("What is your Campfire room ID(not the name)?")
+    get_file_partial(:travis, '.travis.yml')
+  else
+    nil
+  end
 end
 
 step 'Setting up initial project Gemfile' do
@@ -320,7 +314,7 @@ end
 step 'Adding continuous integration (Travis CI)' do
   install_gem 'travis', group: :development
   get_file '.travis.yml'
-  append_to_file '.travis.yml', travis_campfire_config if travis_campfire_config
+  append_to_file '.travis.yml', TRAVIS_CAMPFILE_CONFIG if TRAVIS_CAMPFILE_CONFIG
 end
 
 step 'Adding continuous testing for ruby (Guard::Rspec)' do

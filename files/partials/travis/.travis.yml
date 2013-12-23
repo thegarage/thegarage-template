@@ -1,0 +1,4 @@
+notifications:
+  campfire: <%= TRAVIS_CAMPFIRE_SUBDOMAIN %>:<%= TRAVIS_CAMPFIRE_API_KEY %>@<%= TRAVIS_CAMPFIRE_ROOM_ID %>
+  on_success: change
+  on_failure: always
