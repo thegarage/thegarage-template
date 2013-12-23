@@ -53,7 +53,21 @@ def get_file(path)
   remove_file path
   resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', path)
   puts "Downloading resource: #{resource}"
-  get(resource, path) do |contents|
+  content = open(resource) do |input|
+    template = input.binmode.read
+    template = ERB.new(contents)
+    template.result(binding)
+  end
+  create_file path, content
+end
+
+# download remote file contents and process through ERB
+# return the processed string
+def get_file_partial(category, path)
+  resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', 'partials', category, path)
+  puts "Downloading resource: #{resource}"
+  open(resource) do |input|
+    template = input.binmode.read
     template = ERB.new(contents)
     template.result(binding)
   end
@@ -168,22 +182,11 @@ step 'Adding lib/autoloaded to autoload_paths' do
   environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"
 end
 
-bundler_groups_applicationrb = <<-EOS
-# Delay requiring debug group until dotenv-rails has been required
-# which loads the necessary ENV variables
-Bundler.require(:debug) if %w{ development test }.include?(Rails.env) && ENV['BUNDLER_INCLUDE_DEBUG_GROUP'] == 'true'
-EOS
-
-env_bundler_include_debug_group = <<-EOS
-# enable debug gems in development/test mode
-BUNDLER_INCLUDE_DEBUG_GROUP=true
-
-EOS
 step 'Adding debug Bundler group' do
   install_gem 'pry-remote', group: :debug
 
-  append_to_file '.env', env_bundler_include_debug_group
-  insert_lines_into_file 'config/application.rb', bundler_groups_applicationrb, after: 'Bundler.require'
+  append_to_file '.env', get_file_partial(:debug, '.env')
+  insert_lines_into_file 'config/application.rb', get_file_partial(:debug, 'application.rb'), after: 'Bundler.require'
 end
 
 step 'Disabling config.assets.debug in development environment' do
