@@ -64,7 +64,7 @@ end
 # download remote file contents and process through ERB
 # return the processed string
 def get_file_partial(category, path)
-  resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', 'partials', category, path)
+  resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', 'partials', category.to_s, path)
   puts "Downloading resource: #{resource}"
   open(resource) do |input|
     contents = input.binmode.read
