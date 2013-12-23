@@ -41,3 +41,14 @@ EndAlignment:
 # end
 IndentationWidth:
   Enabled: false
+
+# disable cop for indentation of case/when blocks
+# ex:
+# foo = case
+# when :bar
+#   :baz
+# else
+#   nil
+# end
+CaseIndentation:
+  Enabled: false
