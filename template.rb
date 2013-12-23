@@ -111,7 +111,7 @@ else
   nil
 end
 
-step 'Setup initial project Gemfile' do
+step 'Setting up initial project Gemfile' do
   replace_file 'Gemfile', ''
   add_source "https://rubygems.org"
   insert_lines_into_file 'Gemfile', "ruby '2.0.0'", after: /^source /
@@ -133,11 +133,11 @@ step 'Setup initial project Gemfile' do
   get_file '.gitignore'
 end
 
-step 'Setup Rakefile default_tasks' do
+step 'Setting up Rakefile default_tasks' do
   append_to_file 'Rakefile', "\n\ndefault_tasks = []\n\ntask default: default_tasks\n"
 end
 
-step 'Remove turbolinks support by default' do
+step 'Removing turbolinks' do
   gsub_file 'app/assets/javascripts/application.js', %r{^//= require turbolinks$.}m, ''
 end
 
@@ -155,15 +155,15 @@ additional_application_settings = <<-EOS
     config.force_ssl = (ENV['DEFAULT_URL_PROTOCOL'] == 'https')
 EOS
 
-step 'Configure application route builders' do
+step 'Configuring URL route helpers' do
   environment additional_application_settings
 end
 
-step 'Configure application default timezone' do
+step 'Configuring default timezone' do
   environment "config.time_zone = 'Central Time (US & Canada)'"
 end
 
-step 'Add lib/autoloaded to autoload_paths' do
+step 'Adding lib/autoloaded to autoload_paths' do
   preserve_directory 'lib/autoloaded'
   environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"
 end
@@ -179,18 +179,18 @@ env_bundler_include_debug_group = <<-EOS
 BUNDLER_INCLUDE_DEBUG_GROUP=true
 
 EOS
-step 'Add debug Bundler group' do
+step 'Adding debug Bundler group' do
   install_gem 'pry-remote', group: :debug
 
   append_to_file '.env', env_bundler_include_debug_group
   insert_lines_into_file 'config/application.rb', bundler_groups_applicationrb, after: 'Bundler.require'
 end
 
-step 'Disable config.assets.debug in development environment' do
+step 'Disabling config.assets.debug in development environment' do
   comment_lines 'config/environments/development.rb', /config.assets.debug = true/
 end
 
-step 'Add staging environment' do
+step 'Adding staging environment' do
   get_file 'config/environments/staging.rb'
 end
 
@@ -200,7 +200,7 @@ boxes/*
 .vagrant
 EOS
 
-step 'Setup Vagrant Virtual Machine' do
+step 'Setting up Vagrant Virtual Machine' do
   get_file 'Vagrantfile'
   append_to_file '.gitignore', vagrant_gitignore
 
@@ -253,7 +253,7 @@ config.expect_with :rspec do |c|
 end
 EOS
 
-step 'Add Rspec' do
+step 'Adding Rspec' do
   remove_dir 'test/' unless ARGV.include?("-T")
   install_gem 'rspec-rails', group: [:development, :test]
   generate 'rspec:install'
@@ -278,7 +278,7 @@ simplecov_gitignore = <<-EOS
 # Simplecov files
 coverage
 EOS
-step 'Add simplecov gem' do
+step 'Adding code coverage check (Simplecov)' do
   install_gem 'simplecov', require: false, group: :test
   prepend_to_file 'spec/spec_helper.rb', simplecov
   append_to_file '.gitignore', simplecov_gitignore
@@ -287,18 +287,18 @@ end
 webrat_matcher_setup = <<-EOS
 config.include Webrat::Matchers
 EOS
-step 'Add Webrat gem' do
+step 'Adding Webrat gem' do
   install_gem 'webrat', group: :test
   insert_lines_into_file 'spec/spec_helper.rb', "require 'webrat'", after: "require 'rspec/autorun'"
   insert_lines_into_file 'spec/spec_helper.rb', webrat_matcher_setup, indent: 2, after: /config.use_transactional_fixtures /
 end
 
-step 'Add should_not gem' do
+step 'Adding should_not gem' do
   install_gem 'should_not', group: :test
   insert_lines_into_file 'spec/spec_helper.rb', "require 'should_not/rspec'", after: "require 'rspec/autorun'"
 end
 
-step 'Add webmock gem' do
+step 'Adding webmock gem' do
   install_gem 'webmock', group: :test
   insert_lines_into_file 'spec/spec_helper.rb', "require 'webmock/rspec'", after: "require 'rspec/autorun'"
 end
@@ -310,7 +310,7 @@ VCR.configure do |c|
   c.hook_into :webmock
 end
 EOS
-step 'Add vcr gem' do
+step 'Adding vcr gem' do
   install_gem 'vcr', group: :test
   insert_lines_into_file 'spec/spec_helper.rb', "require 'vcr'", after: "require 'rspec/autorun'"
   append_to_file 'spec/spec_helper.rb', vcr_setup
@@ -325,7 +325,7 @@ if defined?(Rubocop)
   default_tasks << :rubocop
 end
 EOS
-step 'Add Rubocop gem' do
+step 'Adding Ruby styleguide enforcer (Rubocop)' do
   install_gem 'rubocop', group: [:development, :test]
   insert_lines_into_file 'Rakefile', rubocop_rake, before: "task default: default_tasks"
   get_file '.rubocop.yml'
@@ -341,7 +341,7 @@ jasmine_gitignore = <<-EOS
 spec/tmp
 spec/javascripts/fixtures/generated/
 EOS
-step 'Add jasmine-rails gem' do
+step 'Adding Javascript testsutie (JasmineRails)' do
   install_gem 'jasmine-rails', group: [:development, :test]
   route "mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)"
   insert_lines_into_file 'Rakefile', jasmine_rake, before: "task default: default_tasks"
@@ -365,7 +365,7 @@ if defined?(Jshintrb)
   default_tasks << :jshint
 end
 EOS
-step 'Add jshintrb gem' do
+step 'Adding Javascript styleguide enforder (JSHint)' do
   install_gem 'jshintrb', group: [:development, :test]
   get_file '.jshintrc'
   get_file '.jshintignore'
@@ -388,7 +388,7 @@ namespace :brakeman do
 end
 
 EOS
-step 'Add brakeman:run Rake task' do
+step 'Adding security auditing (Brakeman)' do
   install_gem 'brakeman'
   insert_lines_into_file 'Rakefile', "default_tasks << 'brakeman:run'", before: "task default: default_tasks"
   lib 'tasks/brakeman.rake', brakeman_task
@@ -408,7 +408,7 @@ namespace :bundler do
 end
 
 EOS
-step 'Add bundler:audit Rake task' do
+step 'Adding Bundler gem vulnerability audit (BundlerAudit)' do
   install_gem 'bundler-audit', group: :test, require: false
   lib 'tasks/bundler_audit.rake', bundler_audit_rake
   insert_lines_into_file 'Rakefile', "default_tasks << 'bundler:audit'", before: "task default: default_tasks"
@@ -425,7 +425,7 @@ namespace :bundler do
 end
 
 EOS
-step 'Add bundler:outdated Rake task' do
+step 'Adding report of outdated gems' do
   lib 'tasks/bundler_outdated.rake', bundler_outdated_rake
   insert_lines_into_file 'Rakefile', "default_tasks << 'bundler:outdated'", before: "task default: default_tasks"
 end
@@ -436,7 +436,7 @@ newrelic_env = <<-EOS
 NEW_RELIC_LICENSE_KEY=#{newrelic_key}
 
 EOS
-step 'Add NewRelic gem' do
+step 'Adding applicaiton monitoring (NewRelic)' do
   install_gem 'newrelic_rpm'
   install_gem 'newrelic-rake'
   append_to_file '.env', newrelic_env
@@ -460,23 +460,23 @@ Honeybadger.configure do |config|
   config.params_filters.concat custom_env_filters
 end
 EOS
-step 'Add Honeybadger gem' do
+step 'Adding exception monitoring (Honeybadger)' do
   install_gem 'honeybadger'
   append_to_file '.env', honeybadger_env
   initializer 'honeybadger.rb', honeybadgerrb
 end
 
-step 'Add Heroku 12factor gem' do
+step 'Adding support for Heroku hosting' do
   install_gem 'rails_12factor', group: :production
 end
 
-step 'Add Travis CI' do
+step 'Adding continuous integration (Travis CI)' do
   install_gem 'travis', group: :development
   get_file '.travis.yml'
   append_to_file '.travis.yml', travis_campfire_config if travis_campfire_config
 end
 
-step 'Add guard-rspec gem' do
+step 'Adding continuous testing for ruby (Guard::Rspec)' do
   install_gem 'guard-rspec', group: :ct
   run_command 'guard init rspec'
   gsub_file 'Guardfile', /  # Capybara features specs.*\z/m, "end\n"
@@ -493,12 +493,12 @@ guard :rubocop, all_on_start: false, cli: ['--rails'] do
   watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }
 end
 EOS
-step 'Add guard-rubocop gem' do
+step 'Adding continuous testing for ruby styleguide (Guard::Rubocop)' do
   install_gem 'guard-rubocop', group: :ct
   append_to_file 'Guardfile', rubocop_guardfile
 end
 
-step 'Add guard-jshintrb gem' do
+step 'Adding continuous testing for javascript styleguide (Guard::JSHintRb)' do
   install_gem 'guard-jshintrb', group: :ct
   run_command 'guard init jshintrb'
 end
@@ -511,24 +511,24 @@ guard 'jasmine-rails', all_on_start: false do
   watch(%r{app/assets/javascripts/(.+?)\.(js\.coffee|js|coffee)(?:\.\w+)*$}) { |m| "spec/javascripts/#{ m[1] }_spec.#{ m[2] }" }
 end
 EOS
-step 'Add guard-jasmine-rails gem' do
+step 'Adding continuous testing for javascript testsuite (Guard::JasmineRails)' do
   install_gem 'guard-jasmine-rails', group: :ct
   append_to_file 'Guardfile', jasmine_rails_guardfile
 end
 
-step 'Add project documentation' do
+step 'Adding project documentation' do
   get_file 'CONTRIBUTING.md'
   remove_file 'README.rdoc'
   get_file 'README.md'
 end
 
-step 'Generate /static controller endpoint' do
+step 'Adding /static controller endpoint' do
   generate 'controller Static --no_helper'
   preserve_directory 'app/views/static'
   route "get 'static/:action' => 'static#:action' if Rails.env.development?"
 end
 
-step 'Cleanup rubocop validations' do
+step 'Cleaning up rubocop validations' do
   gsub_file 'config/environments/test.rb', /config.static_cache_control = "public, max-age=3600"/, "config.static_cache_control = 'public, max-age=3600'"
   gsub_file 'config/routes.rb', /\n  \n/, ''
   gsub_file 'spec/spec_helper.rb', /"/, "'"
@@ -544,7 +544,7 @@ env_secret_token = <<-EOS
 SECRET_KEY_BASE=#{secret_key_base}
 EOS
 
-step 'Moving secret key to .env file' do
+step 'Addressing security vulnerability: Moving secret key to .env file' do
   gsub_file 'config/initializers/secret_token.rb', / =.*/, " = ENV['SECRET_KEY_BASE']"
   append_to_file '.env', env_secret_token
 end
@@ -564,7 +564,7 @@ email_spec_matcher_setup = <<-EOS
 config.include EmailSpec::Helpers
 config.include EmailSpec::Matchers
 EOS
-step 'Implementing full e-mail support' do
+step 'Adding email support' do
   install_gem 'valid_email'
   install_gem 'email_spec', group: :test
   install_gem 'email_preview'
@@ -574,7 +574,7 @@ step 'Implementing full e-mail support' do
   insert_lines_into_file 'spec/spec_helper.rb', email_spec_matcher_setup, after: /config.use_transactional_fixtures /
 end
 
-step 'Finalize initial project' do
+step 'Finalizing project setup' do
   run_command 'bundle install --local'
   git :init
   git add: '.'
