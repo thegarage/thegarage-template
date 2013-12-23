@@ -544,7 +544,7 @@ env_secret_token = <<-EOS
 SECRET_KEY_BASE=#{secret_key_base}
 EOS
 
-step 'Addressing security vulnerability: Moving secret key to .env file' do
+step 'Addressing brakeman security vulnerability: Moving secret key to .env file' do
   gsub_file 'config/initializers/secret_token.rb', / =.*/, " = ENV['SECRET_KEY_BASE']"
   append_to_file '.env', env_secret_token
 end
