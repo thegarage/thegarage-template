@@ -1,0 +1,3 @@
+if defined?(JasmineRails)
+  default_tasks << 'spec:javascript'
+end
