@@ -52,19 +52,19 @@ end
 def get_file(path)
   remove_file path
   resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', path)
-  puts "Downloading resource: #{resource}"
-  content = open(resource) do |input|
-    contents = input.binmode.read
-    template = ERB.new(contents)
-    template.result(binding)
-  end
-  create_file path, content
+  create_file path, download_resource(resource)
+end
+
+# download partial file contents and process through ERB
+# return the processed string
+def get_file_partial(category, path)
+  resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', 'partials', category.to_s, path)
+  download_resource resource
 end
 
 # download remote file contents and process through ERB
 # return the processed string
-def get_file_partial(category, path)
-  resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', 'partials', category.to_s, path)
+def download_resource(resource)
   puts "Downloading resource: #{resource}"
   open(resource) do |input|
     contents = input.binmode.read
