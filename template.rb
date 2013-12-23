@@ -143,10 +143,6 @@ end
 
 additional_application_settings = <<-EOS
 # configure asset hosts for controllers + mailers
-    asset_host = "\#{ENV['DEFAULT_URL_PROTOCOL']}://\#{ENV['DEFAULT_URL_HOST']}"
-    config.action_controller.asset_host = asset_host
-    config.action_mailer.asset_host = asset_host
-
     # configure url helpers to use the options from env
     default_url_options = {
       host: ENV['DEFAULT_URL_HOST'],
