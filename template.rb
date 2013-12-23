@@ -54,7 +54,7 @@ def get_file(path)
   resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', path)
   puts "Downloading resource: #{resource}"
   content = open(resource) do |input|
-    template = input.binmode.read
+    contents = input.binmode.read
     template = ERB.new(contents)
     template.result(binding)
   end
@@ -67,7 +67,7 @@ def get_file_partial(category, path)
   resource = File.join(TEMPLATE_HOST, TEMPLATE_BRANCH, 'files', 'partials', category, path)
   puts "Downloading resource: #{resource}"
   open(resource) do |input|
-    template = input.binmode.read
+    contents = input.binmode.read
     template = ERB.new(contents)
     template.result(binding)
   end
