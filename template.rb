@@ -306,7 +306,7 @@ step 'Adding exception monitoring (Honeybadger)' do
 end
 
 step 'Adding support for Heroku hosting' do
-  install_gem 'rails_12factor', group: :production
+  install_gem 'rails_12factor', group: [:production, :staging]
 end
 
 step 'Adding continuous integration (Travis CI)' do
