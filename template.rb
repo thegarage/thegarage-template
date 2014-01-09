@@ -234,23 +234,23 @@ step 'Adding code coverage check (Simplecov)' do
   append_to_file '.gitignore', get_file_partial(:simplecov, '.gitignore')
 end
 
-step 'Adding Webrat gem' do
+step 'Adding Rspec utility (Webrat)' do
   install_gem 'webrat', group: :test
   insert_lines_into_file 'spec/spec_helper.rb', "require 'webrat'", after: "require 'rspec/autorun'"
   insert_lines_into_file 'spec/spec_helper.rb', 'config.include Webrat::Matchers', indent: 2, after: /config.use_transactional_fixtures /
 end
 
-step 'Adding should_not gem' do
+step 'Adding Rspec utility (should_not)' do
   install_gem 'should_not', group: :test
   insert_lines_into_file 'spec/spec_helper.rb', "require 'should_not/rspec'", after: "require 'rspec/autorun'"
 end
 
-step 'Adding webmock gem' do
+step 'Adding Rspec utility (webmock)' do
   install_gem 'webmock', group: :test
   insert_lines_into_file 'spec/spec_helper.rb', "require 'webmock/rspec'", after: "require 'rspec/autorun'"
 end
 
-step 'Adding vcr gem' do
+step 'Adding Rspec utility (vcr)' do
   install_gem 'vcr', group: :test
   insert_lines_into_file 'spec/spec_helper.rb', "require 'vcr'", after: "require 'rspec/autorun'"
   append_to_file 'spec/spec_helper.rb', get_file_partial(:vcr, 'spec_helper.rb')
@@ -264,10 +264,8 @@ end
 
 step 'Adding Javascript testsuite (JasmineRails)' do
   install_gem 'jasmine-rails', group: [:development, :test]
-  route "mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)"
+  run_command 'rails generate jasmine_rails:install'
   insert_lines_into_file 'Rakefile', get_file_partial(:jasmine, 'Rakefile'), before: "task default: default_tasks"
-  append_to_file '.gitignore', get_file_partial(:jasmine, '.gitignore')
-  get_file 'spec/javascripts/support/jasmine.yml'
 end
 
 step 'Adding Javascript styleguide enforder (JSHint)' do
@@ -294,7 +292,7 @@ step 'Adding report of outdated gems' do
   insert_lines_into_file 'Rakefile', "default_tasks << 'bundler:outdated'", before: "task default: default_tasks"
 end
 
-step 'Adding applicaiton monitoring (NewRelic)' do
+step 'Adding application monitoring (NewRelic)' do
   install_gem 'newrelic_rpm'
   install_gem 'newrelic-rake'
   append_to_file '.env', get_file_partial(:newrelic, '.env')
@@ -308,7 +306,7 @@ step 'Adding exception monitoring (Honeybadger)' do
 end
 
 step 'Adding support for Heroku hosting' do
-  install_gem 'rails_12factor', group: :production
+  install_gem 'rails_12factor', group: [:production, :staging]
 end
 
 step 'Adding continuous integration (Travis CI)' do
@@ -317,11 +315,18 @@ step 'Adding continuous integration (Travis CI)' do
   append_to_file '.travis.yml', TRAVIS_CAMPFILE_CONFIG if TRAVIS_CAMPFILE_CONFIG
 end
 
+step 'Adding continuous testing framework (Guard)' do
+  install_gem 'guard', group: :ct
+  install_gem 'terminal-notifier', group: :ct
+  install_gem 'terminal-notifier-guard', group: :ct
+
+  run_command 'bundle binstubs guard'
+end
+
 step 'Adding continuous testing for ruby (Guard::Rspec)' do
   install_gem 'guard-rspec', group: :ct
   run_command 'guard init rspec'
   gsub_file 'Guardfile', /  # Capybara features specs.*\z/m, "end\n"
-  run_command 'bundle binstubs guard'
 end
 
 step 'Adding continuous testing for ruby styleguide (Guard::Rubocop)' do
@@ -336,7 +341,7 @@ end
 
 step 'Adding continuous testing for javascript testsuite (Guard::JasmineRails)' do
   install_gem 'guard-jasmine-rails', group: :ct
-  append_to_file 'Guardfile', get_file_partial(:jasmine, 'Guardfile')
+  run_command 'guard init jasmine-rails'
 end
 
 step 'Adding Puma as default appserver' do
@@ -391,6 +396,11 @@ step 'Adding email support' do
   environment smtp_applicationrb
   insert_lines_into_file 'spec/spec_helper.rb', "require 'email_spec'", after: "require 'rspec/autorun'"
   insert_lines_into_file 'spec/spec_helper.rb', get_file_partial(:email, 'spec_helper.rb'), after: /config.use_transactional_fixtures /
+end
+
+step 'Reorganizing Gemfile dependencies' do
+  install_gem 'bundler-reorganizer', group: :development
+  run_command 'bundler-reorganizer Gemfile'
 end
 
 step 'Finalizing project setup' do
