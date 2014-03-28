@@ -99,7 +99,7 @@ def insert_lines_into_file(path, content, options = {})
 
   indented_content = ''
   content.each_line do |line|
-    indented_content += (indent + line)
+    indented_content += line.blank? ? line : (indent + line)
   end
   indented_content += "\n"
 
