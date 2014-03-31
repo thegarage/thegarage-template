@@ -1,7 +1,7 @@
 require 'erb'
 
 TEMPLATE_HOST = ENV.fetch('TEMPLATE_HOST', 'https://raw.github.com/thegarage/thegarage-template')
-TEMPLATE_BRANCH = ENV.fetch('TEMPLATE_BRANCH', 'you-have-30-seconds-to-comply')
+TEMPLATE_BRANCH = ENV.fetch('TEMPLATE_BRANCH', 'master')
 
 # helper method to wrap a chunk of code
 # with consistent output + a git commit message
