@@ -1,7 +1,7 @@
 require 'erb'
 
 TEMPLATE_HOST = ENV.fetch('TEMPLATE_HOST', 'https://raw.github.com/thegarage/thegarage-template')
-TEMPLATE_BRANCH = ENV.fetch('TEMPLATE_BRANCH', 'master')
+TEMPLATE_BRANCH = ENV.fetch('TEMPLATE_BRANCH', 'you-have-30-seconds-to-comply')
 
 # helper method to wrap a chunk of code
 # with consistent output + a git commit message
@@ -372,6 +372,7 @@ step 'Cleaning up rubocop validations' do
   gsub_file 'config/environments/test.rb', /config.static_cache_control = "public, max-age=3600"/, "config.static_cache_control = 'public, max-age=3600'"
   gsub_file 'config/routes.rb', /\n  \n/, ''
   gsub_file 'spec/spec_helper.rb', /"/, "'"
+  gsub_file 'config/application.rb', /\n\n/, "\n"
 end
 
 step 'Addressing brakeman security vulnerability: Moving secret key to .env file' do
@@ -395,7 +396,7 @@ step 'Adding email support' do
   append_to_file '.env', get_file_partial(:email, '.env')
   environment smtp_applicationrb
   insert_lines_into_file 'spec/spec_helper.rb', "require 'email_spec'", after: "require 'rspec/autorun'"
-  insert_lines_into_file 'spec/spec_helper.rb', get_file_partial(:email, 'spec_helper.rb'), after: /config.use_transactional_fixtures /
+  insert_lines_into_file 'spec/spec_helper.rb', get_file_partial(:email, 'spec_helper.rb'), indent: 2, after: /config.use_transactional_fixtures /
 end
 
 step 'Reorganizing Gemfile dependencies' do
