@@ -99,7 +99,7 @@ def insert_lines_into_file(path, content, options = {})
 
   indented_content = ''
   content.each_line do |line|
-    indented_content += (indent + line)
+    indented_content += line.blank? ? line : (indent + line)
   end
   indented_content += "\n"
 
@@ -372,6 +372,7 @@ step 'Cleaning up rubocop validations' do
   gsub_file 'config/environments/test.rb', /config.static_cache_control = "public, max-age=3600"/, "config.static_cache_control = 'public, max-age=3600'"
   gsub_file 'config/routes.rb', /\n  \n/, ''
   gsub_file 'spec/spec_helper.rb', /"/, "'"
+  gsub_file 'config/application.rb', /\n\n/, "\n"
 end
 
 step 'Addressing brakeman security vulnerability: Moving secret key to .env file' do
@@ -395,7 +396,7 @@ step 'Adding email support' do
   append_to_file '.env', get_file_partial(:email, '.env')
   environment smtp_applicationrb
   insert_lines_into_file 'spec/spec_helper.rb', "require 'email_spec'", after: "require 'rspec/autorun'"
-  insert_lines_into_file 'spec/spec_helper.rb', get_file_partial(:email, 'spec_helper.rb'), after: /config.use_transactional_fixtures /
+  insert_lines_into_file 'spec/spec_helper.rb', get_file_partial(:email, 'spec_helper.rb'), indent: 2, after: /config.use_transactional_fixtures /
 end
 
 step 'Reorganizing Gemfile dependencies' do
