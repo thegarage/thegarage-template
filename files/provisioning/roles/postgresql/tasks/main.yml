@@ -1,0 +1,28 @@
+---
+
+  - name: postgresql apt repo config
+    copy: src=pgdg.list dest=/etc/apt/sources.list.d/pgdg.list owner=root group=root mode=0644
+
+  - name: postgresql | install postgresql server and client
+    apt: name={{ item }} state=latest update_cache=yes force=yes
+    environment: locale_env_vars
+    with_items:
+      - postgresql-server-dev-9.3
+      - postgresql-client-9.3
+      - postgresql-contrib-9.3
+
+  - name: postgresql | copy existing config files
+    command: cp /etc/postgresql/9.3/main/{{ item }} /etc/postgresql/9.3/main/{{ item }}.original
+    with_items:
+      - pg_hba.conf
+
+  - name: postgresql | update postgresql.conf file
+    lineinfile: dest=/etc/postgresql/9.3/main/postgresql.conf insertafter="^#listen_addresses " line="listen_addresses='*'"
+
+  - name: postgresql config files
+    copy: src={{ item }} dest=/etc/postgresql/9.3/main/{{ item }} owner=postgres group=postgres mode=0640
+    environment: locale_env_vars
+    with_items:
+      - pg_hba.conf
+    notify:
+    - restart postgresql

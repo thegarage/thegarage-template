@@ -1,0 +1,4 @@
+---
+  - name: rails_setup | execute setup script
+    sudo: yes
+    script: vm_rails_setup.sh

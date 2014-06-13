@@ -1,0 +1,9 @@
+---
+- name: set_locale | copy template file
+  copy: src=lang.sh dest=/etc/profile.d/lang.sh owner=root group=root mode=0644
+- name: set_locale | execute locale-gen
+  command: locale-gen en_US.UTF-8
+- name: set_locale | execute dpkg-reconfigure-locales
+  command: dpkg-reconfigure locales
+- name: set_locale | update-locale
+  command: update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8

@@ -1,0 +1,3 @@
+ - name: restart postgresql
+   environment: locale_env_vars
+   service: name=postgresql state=restarted
