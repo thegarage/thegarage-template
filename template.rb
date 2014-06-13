@@ -1,7 +1,7 @@
 require 'erb'
 
 TEMPLATE_HOST = ENV.fetch('TEMPLATE_HOST', 'https://raw.github.com/thegarage/thegarage-template')
-TEMPLATE_BRANCH = ENV.fetch('TEMPLATE_BRANCH', 'ansible')
+TEMPLATE_BRANCH = ENV.fetch('TEMPLATE_BRANCH', 'master')
 
 # helper method to wrap a chunk of code
 # with consistent output + a git commit message
@@ -221,7 +221,11 @@ step 'Adding Rspec' do
   install_gem 'shoulda-matchers', group: :test
 
   install_gem 'factory_girl_rails', group: [:development, :test]
-  #install_gem 'factory_girl_rspec', group: :test
+
+  gem 'factory_girl_rspec', group: :test
+  run_command "gem install factory_girl_rspec"
+  run_command 'bundle install'
+
 end
 
 step 'Adding code coverage check (Simplecov)' do
@@ -320,8 +324,11 @@ step 'Adding continuous testing framework (Guard)' do
 end
 
 step 'Adding continuous testing for ruby (Guard::Rspec)' do
-#  install_gem 'guard-rspec', group: :ct
-#  run_command 'guard init rspec'
+
+  gem 'guard-rspec', group: :ct
+  run_command "gem install guard-rspec"
+  run_command 'bundle install'
+  run_command 'guard init rspec'
   gsub_file 'Guardfile', /  # Capybara features specs.*\z/m, "end\n"
 end
 
