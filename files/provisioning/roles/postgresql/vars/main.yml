@@ -1,0 +1,4 @@
+locale_env_vars:
+  language: en_US.UTF-8
+  lang: en_US.UTF-8
+  lc_all: en_US.UTF-8

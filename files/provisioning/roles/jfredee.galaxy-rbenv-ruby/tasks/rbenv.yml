@@ -1,0 +1,34 @@
+---
+
+- name: rbenv | install build depends
+  sudo: yes
+  apt: pkg={{ item }} state=latest install_recommends=no
+  with_items:
+    - build-essential
+    - libcurl4-openssl-dev
+    - libreadline-dev
+    - libssl-dev
+    - libxml2-dev
+    - libxslt1-dev
+    - zlib1g-dev
+
+- name: rbenv | update rbenv repo
+  git: repo=https://github.com/sstephenson/rbenv.git dest={{ rbenv_root }} version=v0.4.0
+
+- name: rbenv | add rbenv initialization to profile
+  sudo: yes
+  template: src=rbenv.sh.j2 dest=/etc/profile.d/rbenv.sh owner=root group=root mode=0755
+
+- name: rbenv | check ruby-build installed
+  command: test -x ~/.rbenv/plugins/ruby-build
+  register: rbuild_present
+  ignore_errors: yes
+
+- name: rbenv | create temporary directory
+  command: mktemp -d
+  register: tempdir
+  when: rbuild_present|failed
+
+- name: rbenv | clone ruby-build repo
+  git: repo=https://github.com/sstephenson/ruby-build.git dest={{ rbenv_root }}/plugins/ruby-build
+  when: rbuild_present|failed

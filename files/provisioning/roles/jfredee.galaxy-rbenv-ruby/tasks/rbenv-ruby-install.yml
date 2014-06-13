@@ -1,0 +1,21 @@
+---
+
+- name: rbenv | check ruby {{ ruby_version }} installed
+  shell: . /etc/profile.d/rbenv.sh; RBENV_ROOT={{ rbenv_root }} rbenv versions | grep {{ ruby_version }}
+  register: ruby_installed
+  ignore_errors: yes
+
+- name: rbenv | install ruby {{ ruby_version }}
+  shell: . /etc/profile.d/rbenv.sh; RBENV_ROOT={{ rbenv_root }} rbenv install {{ ruby_version }}
+  when: ruby_installed|failed
+
+- name: rbenv | set global ruby {{ ruby_version }}
+  shell: . /etc/profile.d/rbenv.sh; RBENV_ROOT={{ rbenv_root }} rbenv global {{ ruby_version }}
+  when: ruby_installed|failed
+
+- name: rbenv | rehash
+  shell: . /etc/profile.d/rbenv.sh; RBENV_ROOT={{ rbenv_root }} rbenv rehash
+  when: ruby_installed|failed
+
+- name: rbenv | install bundler
+  shell: . /etc/profile.d/rbenv.sh; RBENV_ROOT={{ rbenv_root }} gem install bundler

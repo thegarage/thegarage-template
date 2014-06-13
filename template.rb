@@ -124,7 +124,7 @@ step 'Setting up initial project Gemfile' do
   add_source "https://rubygems.org"
   insert_lines_into_file 'Gemfile', "ruby '2.0.0'", after: /^source /
 
-  gem 'rails', '~> 4.0.1'
+  gem 'rails', '~> 4.1.1'
   gem 'jquery-rails'
   gem 'sass-rails', '~> 4.0.0'
   gem 'uglifier', '>= 1.3.0'
@@ -402,6 +402,11 @@ end
 step 'Reorganizing Gemfile dependencies' do
   install_gem 'bundler-reorganizer', group: :development
   run_command 'bundler-reorganizer Gemfile'
+end
+
+step 'Add Ansible Provisioning' do
+  preserve_directory 'provisioning'
+  directory('provisioning')
 end
 
 step 'Finalizing project setup' do

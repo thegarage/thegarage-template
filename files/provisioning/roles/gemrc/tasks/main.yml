@@ -1,0 +1,6 @@
+---
+- name: set_gemrc | copy template file
+  copy: src=gemrc dest=/etc/gemrc owner=root group=root mode=0644
+  sudo: yes
+  tags:
+    - gemrc
