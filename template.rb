@@ -195,14 +195,10 @@ step 'Setting up Vagrant Virtual Machine' do
   get_file 'Vagrantfile'
   append_to_file '.gitignore', get_file_partial(:vagrant, '.gitignore')
 
-  get_file 'Berksfile'
   get_file 'config/database.yml'
-  get_file 'chef/node.json'
   get_file 'bin/vm_rails_setup'
   chmod 'bin/vm_rails_setup', 0755
 
-  preserve_directory 'chef/roles'
-  preserve_directory 'chef/data_bags'
 end
 
 rspec_config_generators =  <<-EOS
