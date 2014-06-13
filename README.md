@@ -13,12 +13,11 @@ Features
 
 Prerequisites
 -------------
-* [Rails 4.0](https://github.com/rails/rails)
+* [Rails 4.1](https://github.com/rails/rails)
 * [Bundler](http://bundler.io/)
 * [Virtualbox](https://www.virtualbox.org)
 * [Vagrant](http://www.vagrantup.com/)
-* [Vagrant-Omnibus](https://github.com/schisamo/vagrant-omnibus)
-* [Vagrant-Berkshelf](https://github.com/riotgames/vagrant-berkshelf)
+* [Ansible](http://www.ansible.com/)
 
 Usage
 -----
