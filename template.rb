@@ -319,11 +319,11 @@ step 'Adding continuous testing framework (Guard)' do
   run_command 'bundle binstubs guard'
 end
 
-#step 'Adding continuous testing for ruby (Guard::Rspec)' do
+step 'Adding continuous testing for ruby (Guard::Rspec)' do
 #  install_gem 'guard-rspec', group: :ct
 #  run_command 'guard init rspec'
-#  gsub_file 'Guardfile', /  # Capybara features specs.*\z/m, "end\n"
-#end
+  gsub_file 'Guardfile', /  # Capybara features specs.*\z/m, "end\n"
+end
 
 step 'Adding continuous testing for ruby styleguide (Guard::Rubocop)' do
   install_gem 'guard-rubocop', group: :ct
