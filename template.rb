@@ -221,7 +221,7 @@ step 'Adding Rspec' do
   install_gem 'shoulda-matchers', group: :test
 
   install_gem 'factory_girl_rails', group: [:development, :test]
-  install_gem 'factory_girl_rspec', group: :test, version: '2.1.0'
+  #install_gem 'factory_girl_rspec', group: :test
 end
 
 step 'Adding code coverage check (Simplecov)' do
