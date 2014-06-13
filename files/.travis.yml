@@ -1,7 +1,7 @@
 language: ruby
 bundler_args: --local --without development vm ct console debug
 rvm:
-  - ruby-2.0.0-p353
+  - ruby-2.1.2
 env:
   - BUNDLER_INCLUDE_DEBUG_GROUP=false
 
