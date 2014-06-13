@@ -379,6 +379,8 @@ step 'Cleaning up rubocop validations' do
 end
 
 step 'Addressing brakeman security vulnerability: Moving secret key to .env file' do
+
+  get_file 'config/initializers/secret_token.rb'
   gsub_file 'config/initializers/secret_token.rb', / =.*/, " = ENV['SECRET_KEY_BASE']"
 
   require 'securerandom'
@@ -408,8 +410,10 @@ step 'Reorganizing Gemfile dependencies' do
 end
 
 step 'Add Ansible Provisioning' do
-  preserve_directory 'provisioning'
-  directory('provisioning')
+  run_command 'rm -rf template_temp'
+  run_command 'git clone https://github.com/thegarage/thegarage-template.git template_temp'
+  run_command 'cp -r template_temp/files/provisioning .'
+  run_command 'rm -rf template_temp'
 end
 
 step 'Finalizing project setup' do
