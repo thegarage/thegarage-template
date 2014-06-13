@@ -122,7 +122,7 @@ end
 step 'Setting up initial project Gemfile' do
   replace_file 'Gemfile', ''
   add_source "https://rubygems.org"
-  insert_lines_into_file 'Gemfile', "ruby '2.0.0'", after: /^source /
+  insert_lines_into_file 'Gemfile', "ruby '2.1.2'", after: /^source /
 
   gem 'rails', '~> 4.1.1'
   gem 'jquery-rails'
