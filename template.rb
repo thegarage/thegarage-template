@@ -43,7 +43,11 @@ def install_gem(gem_name, options = {})
     gem gem_name
   end
   run_command "gem install #{gem_name}"
-  run_command 'bundle install --local'
+  if options[:local] == :no
+    run_command 'bundle install'
+  else
+    run_command 'bundle install --local'
+  end
 end
 
 # download remote file from remote repo and save to local path
@@ -221,10 +225,8 @@ step 'Adding Rspec' do
   install_gem 'shoulda-matchers', group: :test
 
   install_gem 'factory_girl_rails', group: [:development, :test]
-
-  gem 'factory_girl_rspec', group: :test
-  run_command "gem install factory_girl_rspec"
-  run_command 'bundle install'
+  install_gem 'factory_girl_rspec', { group: :test, local: :no }
+  install_gem 'spring-commands-rspec', { group: :development, local: :no }
 
 end
 
@@ -324,10 +326,7 @@ step 'Adding continuous testing framework (Guard)' do
 end
 
 step 'Adding continuous testing for ruby (Guard::Rspec)' do
-
-  gem 'guard-rspec', group: :ct
-  run_command "gem install guard-rspec"
-  run_command 'bundle install'
+  install_gem 'guard-rspec', { group: :ct, local: :no }
   run_command 'guard init rspec'
   gsub_file 'Guardfile', /  # Capybara features specs.*\z/m, "end\n"
 end
