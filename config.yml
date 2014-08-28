@@ -1,0 +1,33 @@
+recipes:
+- vagrant
+- core
+- tests
+
+prefs:
+  :apps4: none
+  :announcements: none
+  :tests: rspec
+  :continuous_testing: guard
+  :database: postgresql
+  :dev_webserver: puma
+  :prod_webserver: same
+  :templates: haml
+  :email: mandrill
+  :unit_test: rspec
+  :fixtures: factory_girl
+  :authentication: none
+  :devise_modules: default
+  :authorization: pundit
+  :deployment: none
+  :local_env_file: foreman
+  :pry: true
+  :better_errors: true
+  :github: false
+  :ban_spiders: false
+  :quiet_assets: false
+  :frontend: bootstrap3
+  :form_builder: simple_form
+  :locale: none
+  :rvmrc: false
+
+gems:

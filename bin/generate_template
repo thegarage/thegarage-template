@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+rails_apps_composer template template.rb -d config.yml -l recipes -q

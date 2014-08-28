@@ -13,7 +13,7 @@ Features
 
 Prerequisites
 -------------
-* [Rails 4.1](https://github.com/rails/rails)
+* [Rails](https://github.com/rails/rails)
 * [Bundler](http://bundler.io/)
 * [Virtualbox](https://www.virtualbox.org)
 * [Vagrant](http://www.vagrantup.com/)
@@ -26,7 +26,7 @@ Generate new rails project, and the template will automatically prompt you
 to enter the relevant API Keys/Tokens for services and configure your app:
 
 ```
-$ rails new myapp -m https://raw.github.com/thegarage/thegarage-template/master/template.rb
+$ rails new myapp -m https://raw.github.com/thegarage/thegarage-template/master/template.rb -T
 $ cd myapp
 $ vagrant up --provision
 ```
@@ -91,6 +91,20 @@ Common Convenience Settings
 * We set the time zone to Central Time(US & Canada). It can be changed quickly in **config/application.rb**.
 * We've got some convenience settings related to Bundler groups, including debug for Pry.
 
+Development
+-----------
+```bash
+# install necessary gems
+$ bundle
+```
+
+```bash
+# compile recipies into template
+$ bin/generate_template
+
+# generate local example rails app for testing
+$ bin/generate_example_app
+```
 
 [Contributing](CONTRIBUTING.md)
 ------------

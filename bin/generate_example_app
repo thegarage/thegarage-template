@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+rm -rf dummy
+rails new dummy -m template.rb -T
