@@ -13,4 +13,8 @@ sudo bundle exec foreman export upstart /etc/init --user vagrant
 ACTIONS
 
 /sbin/initctl emit provisioned
+
+# start or restart app as necessary
+stop app >/dev/null || true
 start app
+

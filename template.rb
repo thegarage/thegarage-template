@@ -296,10 +296,18 @@ say_recipe 'vagrant'
 # >--------------------------- recipes/vagrant.rb ----------------------------start<
 
 vagrant_git_ignore_template = <<-EOS
+
 # Vagrant files
 boxes/*
 .vagrant
 EOS
+
+before_config do
+  fail 'here'
+end
+
+require 'pry'
+binding.pry
 
 stage_two do
   say_wizard 'recipe stage_two'
@@ -343,6 +351,10 @@ stage_two do
   recipes.each do |recipe|
     copy_from_repo recipe, repo: repo
   end
+
+  ## Git
+  git :add => '-A' if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: setup Vagrant"' if prefer :git, true
 
   system 'vagrant up'
 end

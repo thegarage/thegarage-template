@@ -1,0 +1,3 @@
+---
+- name: phantomjs | install phantomjs
+  apt: name=phantomjs state=latest update_cache=yes force=yes

@@ -7,7 +7,7 @@
     - gemrc
     - nodejs
     - { role: set_locale, sudo: yes }
-    - { role: jfredee.galaxy-rbenv-ruby, ruby_version: 2.1.2, rbenv_user: vagrant }
+    - { role: ruby, ruby_version: 2.1.2 }
     - { role: postgresql, sudo: yes }
-    - { role: mailcatcher, sudo: yes }
+    - { role: phantomjs, sudo: yes }
     - { role: rails_setup, sudo: yes }
