@@ -43,6 +43,7 @@ stage_two do
   git :add => '-A' if prefer :git, true
   git :commit => '-qm "rails_apps_composer: setup Vagrant"' if prefer :git, true
 
+  run 'bundle package'
   run 'vagrant up'
 end
 

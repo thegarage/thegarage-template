@@ -10,6 +10,8 @@ prefs:
   :tests: rspec
   :continuous_testing: guard
   :database: postgresql
+  :pg_host: localhost
+  :pg_username: postgres
   :dev_webserver: puma
   :prod_webserver: same
   :templates: haml

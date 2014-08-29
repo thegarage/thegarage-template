@@ -94,7 +94,7 @@ end
 def add_gem(*all) Gemfile.add(*all); end
 
 @recipes = ["vagrant", "core", "rails_javascript", "continuous_integration", "git", "railsapps", "learn_rails", "rails_bootstrap", "rails_foundation", "rails_omniauth", "rails_devise", "rails_devise_roles", "rails_devise_pundit", "rails_signup_download", "rails_mailinglist_signup", "setup", "locale", "readme", "gems", "tests", "email", "devise", "omniauth", "roles", "frontend", "pages", "init", "analytics", "deployment", "extras"]
-@prefs = {:apps4=>"none", :announcements=>"none", :tests=>"rspec", :continuous_testing=>"guard", :database=>"postgresql", :dev_webserver=>"puma", :prod_webserver=>"same", :templates=>"haml", :email=>"mandrill", :unit_test=>"rspec", :fixtures=>"factory_girl", :authentication=>"none", :devise_modules=>"default", :authorization=>"pundit", :deployment=>"none", :local_env_file=>"foreman", :pry=>true, :better_errors=>true, :github=>false, :ban_spiders=>false, :quiet_assets=>false, :frontend=>"bootstrap3", :form_builder=>"simple_form", :locale=>"none", :rvmrc=>false}
+@prefs = {:apps4=>"none", :announcements=>"none", :tests=>"rspec", :continuous_testing=>"guard", :database=>"postgresql", :pg_host=>"localhost", :pg_username=>"postgres", :dev_webserver=>"puma", :prod_webserver=>"same", :templates=>"haml", :email=>"mandrill", :unit_test=>"rspec", :fixtures=>"factory_girl", :authentication=>"none", :devise_modules=>"default", :authorization=>"pundit", :deployment=>"none", :local_env_file=>"foreman", :pry=>true, :better_errors=>true, :github=>false, :ban_spiders=>false, :quiet_assets=>false, :frontend=>"bootstrap3", :form_builder=>"simple_form", :locale=>"none", :rvmrc=>false}
 @gems = []
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
 @diagnostics_prefs = []
@@ -340,6 +340,7 @@ stage_two do
   git :add => '-A' if prefer :git, true
   git :commit => '-qm "rails_apps_composer: setup Vagrant"' if prefer :git, true
 
+  run 'bundle package'
   run 'vagrant up'
 end
 # >--------------------------- recipes/vagrant.rb ----------------------------end<
@@ -373,6 +374,10 @@ gem 'jasmine-rails', group: [:development, :test]
 
 stage_two do
   generate 'jasmine_rails:install'
+
+  say 'Remove turbolinks'
+  gsub_file 'app/assets/javascripts/application.js', %r{^//= require turbolinks$.}m, ''
+  gsub_file 'Gemfile', /^.*turbolinks.*$/, ''
 end
 # >----------------------- recipes/rails_javascript.rb -----------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
