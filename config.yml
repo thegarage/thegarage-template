@@ -1,7 +1,8 @@
 recipes:
 - vagrant
 - core
-- tests
+- rails_javascript
+- continuous_integration
 
 prefs:
   :apps4: none

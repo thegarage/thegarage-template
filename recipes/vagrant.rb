@@ -9,7 +9,7 @@ stage_two do
   say_wizard 'recipe stage_two'
 
   append_to_file '.gitignore', vagrant_git_ignore_template
-  branch = 'composer'
+  branch = 'composer' # FIXME: use master for official release
   repo = "https://raw.github.com/thegarage/thegarage-template/#{branch}/files/"
   copy_from_repo 'Vagrantfile', repo: repo
 
@@ -43,7 +43,7 @@ stage_two do
   git :add => '-A' if prefer :git, true
   git :commit => '-qm "rails_apps_composer: setup Vagrant"' if prefer :git, true
 
-  system 'vagrant up'
+  run 'vagrant up'
 end
 
 __END__
