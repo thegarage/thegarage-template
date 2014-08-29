@@ -8,13 +8,9 @@ sudo service postgresql restart
 su vagrant -l <<ACTIONS
 cd /vagrant
 bundle install --local
-bundle exec rake db:reset
 sudo bundle exec foreman export upstart /etc/init --user vagrant
 ACTIONS
-
-/sbin/initctl emit provisioned
 
 # start or restart app as necessary
 stop app >/dev/null || true
 start app
-

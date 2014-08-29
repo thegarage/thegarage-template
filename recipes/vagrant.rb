@@ -12,6 +12,7 @@ stage_two do
   branch = 'composer' # FIXME: use master for official release
   repo = "https://raw.github.com/thegarage/thegarage-template/#{branch}/files/"
   copy_from_repo 'Vagrantfile', repo: repo
+  copy_from_repo 'bin/restart', repo: repo
 
   # ruby script to get list of all necessary provisioning files
   # Dir.glob('files/provisioning/**/*').each { |f| puts f.gsub(/^files\//, '') unless File.directory?(f) }
