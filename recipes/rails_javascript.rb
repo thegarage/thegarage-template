@@ -13,5 +13,4 @@ __END__
 name: rails_javascript
 description: 'Add Javascript environment to Rails app'
 author: wireframe
-requires: [setup]
 category: other

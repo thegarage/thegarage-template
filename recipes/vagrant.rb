@@ -3,6 +3,7 @@ vagrant_git_ignore_template = <<-EOS
 # Vagrant files
 boxes/*
 .vagrant
+
 EOS
 
 stage_two do
@@ -11,6 +12,7 @@ stage_two do
   append_to_file '.gitignore', vagrant_git_ignore_template
   branch = 'composer' # FIXME: use master for official release
   repo = "https://raw.github.com/thegarage/thegarage-template/#{branch}/files/"
+  copy_from_repo 'Procfile', repo: repo
   copy_from_repo 'Vagrantfile', repo: repo
   copy_from_repo 'bin/restart', repo: repo
 
