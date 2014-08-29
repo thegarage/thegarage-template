@@ -12,6 +12,9 @@ stage_two do
   copy_from_repo 'lib/tasks/brakeman.rake', repo: repo
   copy_from_repo 'lib/tasks/bundler_audit.rake', repo: repo
   copy_from_repo 'lib/tasks/bundler_outdated.rake', repo: repo
+
+  say 'Setting default rake task to :ci'
+  append_to_file 'Rakefile', "\ntask default: :ci\n"
 end
 
 stage_three do
