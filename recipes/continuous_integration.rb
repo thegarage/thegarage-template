@@ -1,12 +1,12 @@
 gem_group :ci do
-  gem "brakeman"
-  gem "bundler-audit"
-  gem "jshintrb"
-  gem "rubocop"
+  gem 'brakeman'
+  gem 'bundler-audit'
+  gem 'jshintrb'
+  gem 'rubocop'
 end
 
 if prefer :ci, 'travis'
-  gem :travis, group: :toolbox
+  gem 'travis', group: :toolbox
 
   if prefer :hosting, 'heroku'
     prefs[:heroku_production_appname] ||= ask_wizard('Heroku production application name')

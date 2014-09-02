@@ -1,41 +1,17 @@
+# ordered list of recipes to run
 recipes:
-- vagrant
-- rails_javascript
+# - vagrant
+# - rails_javascript
 - continuous_integration
 
+# set of configurable preferences for the template to run
 prefs:
   :remote_host: https://raw.github.com/thegarage/thegarage-template
   # TODO: change to master before deployment
   :remote_branch: composer
-  :apps4: none
-  :announcements: none
-  :tests: rspec
-  :continuous_testing: guard
-  :database: postgresql
-  :pg_host: localhost
-  :pg_username: postgres
-  :dev_webserver: puma
-  :prod_webserver: same
-  :templates: haml
-  :email: mandrill
-  :unit_test: rspec
-  :fixtures: factory_girl
-  :authentication: none
-  :devise_modules: default
-  :authorization: pundit
-  :deployment: none
-  :local_env_file: foreman
-  :pry: true
-  :better_errors: true
-  :github: false
-  :ban_spiders: false
-  :quiet_assets: false
-  :frontend: bootstrap3
-  :form_builder: simple_form
-  :locale: none
-  :rvmrc: false
   :ci: travis
   :hosting: heroku
   :notifier: hipchat
 
+# list of gems to install
 gems:

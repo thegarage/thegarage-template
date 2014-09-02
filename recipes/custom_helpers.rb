@@ -19,29 +19,13 @@ def preserve_directory(directory)
   create_file path, ''
 end
 
-# shortcut method to add a gem to the
-# gemfile/.lock/cache, and install it
-def install_gem(gem_name, options = {})
-  if options[:group]
-    gem gem_name, group: options[:group]
-  else
-    gem gem_name
-  end
-  run_command "gem install #{gem_name}"
-  if options[:local] == :no
-    run_command 'bundle install'
-  else
-    run_command 'bundle install --local'
-  end
-end
-
 # download remote file from remote repo and save to local path
 # the downloaded resources *may* contain dynamic ERB statements
 # that will be automatically evaluated once downloaded
 def get_file(path)
   remove_file path
   resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', path)
-  copy_from_repo path, repo: resource
+  replace_file path, download_resource(resource)
 end
 
 # download partial file contents and process through ERB
@@ -54,8 +38,7 @@ end
 # download remote file contents and process through ERB
 # return the processed string
 def download_resource(resource)
-  puts "Downloading resource: #{resource}"
-  copy
+  say "Downloading resource: #{resource}"
   open(resource) do |input|
     contents = input.binmode.read
     template = ERB.new(contents)
