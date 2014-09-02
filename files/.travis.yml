@@ -25,7 +25,7 @@ notifications:
 <%- end -%>
 
 deploy:
-  provider: <%= prefs[:hosting %>
+  provider: <%= prefs[:hosting] %>
   strategy: git
   run: rake db:migrate
   app:
