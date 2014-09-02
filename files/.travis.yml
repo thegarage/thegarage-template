@@ -9,8 +9,23 @@ branches:
   except:
     - /build-.+-\d{4}-\d{2}-\d{2}-.*/
 
+before_script:
+  - rake db:create:all
+
 # create git tag to support quick rollback to last known good state
-after_success:
-  - git config --global user.email "builds@travis-ci.com"
-  - git config --global user.name "Travis CI"
+before_deploy:
+  - git config --global user.email "buildbot@thegarage.us"
+  - git config --global user.name "Buildbot (Travis CI)"
   - git buildtag
+
+# see http://docs.travis-ci.com/user/notifications/#HipChat-notification
+notifications:
+  hipchat: <%= prefs[:hipchat_api_key] %>@<%= prefs[:hipchat_room] %>
+
+deploy:
+  provider: heroku
+  strategy: git
+  run: rake db:migrate
+  app:
+    master: <%= prefs[:heroku_production_appname] %>
+    staging: <%= prefs[:heroku_staging_appname] %>

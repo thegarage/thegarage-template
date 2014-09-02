@@ -1,10 +1,12 @@
 recipes:
 - vagrant
-- core
 - rails_javascript
 - continuous_integration
 
 prefs:
+  :remote_host: https://raw.github.com/thegarage/thegarage-template
+  # TODO: change to master before deployment
+  :remote_branch: composer
   :apps4: none
   :announcements: none
   :tests: rspec
@@ -32,5 +34,8 @@ prefs:
   :form_builder: simple_form
   :locale: none
   :rvmrc: false
+  :ci: travis
+  :hosting: heroku
+  :notifier: hipchat
 
 gems:

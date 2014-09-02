@@ -20,3 +20,4 @@ config/initializers/secret_token.rb
 .DS_Store
 
 dummy
+temp
