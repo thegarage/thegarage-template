@@ -93,7 +93,7 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["git", "base", "webapp", "rails_javascript", "continuous_integration", "continuous_testing", "hosting", "custom_helpers"]
+@recipes = ["git", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "hosting", "custom_helpers"]
 @prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"composer", :ci=>"travis", :hosting=>"heroku", :notifier=>"hipchat"}
 @gems = []
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
@@ -307,9 +307,9 @@ stage_two do
     say_wizard "Repository already exists:"
     say_wizard "#{git_uri}"
   else
-    say 'Creating private github repository'
-    run "hub create thegarage/#{app_name} -p"
-    run "hub push -u origin master"
+    say 'TODO: Creating private github repository'
+    # run "hub create thegarage/#{app_name} -p"
+    # run "hub push -u origin master"
   end
 end
 # >----------------------------- recipes/git.rb ------------------------------end<
@@ -335,6 +335,8 @@ gsub_file 'Gemfile', /\s*gem 'sdoc', require: false\nend/, ''
 
 gem 'dotenv-rails'
 gem 'rails-console-tweaks'
+gem 'pry-rails'
+
 gem_group :toolbox do
   gem 'thegarage-gitx'
   gem 'bundler-reorganizer'
@@ -409,6 +411,58 @@ stage_two do
   commit_changes 'Add frontend resources/config'
 end
 # >---------------------------- recipes/webapp.rb ----------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >-------------------------------[ testsuite ]-------------------------------<
+@current_recipe = "testsuite"
+@before_configs["testsuite"].call if @before_configs["testsuite"]
+say_recipe 'testsuite'
+@configs[@current_recipe] = config
+# >-------------------------- recipes/testsuite.rb ---------------------------start<
+
+gem_group [:development, :test] do
+  gem 'rspec-rails',
+  gem 'factory_girl_rails'
+end
+gem 'spring-commands-rspec', group: :development
+gem_group :test do
+  gem 'simplecov', require: false
+  gem 'shoulda-matchers'
+  gem 'factory_girl_rspec'
+  gem 'factory_girl_rspec'
+  gem 'vcr'
+  gem 'timecop'
+  gem 'email_spec'
+  gem 'webmock'
+end
+
+rspec_config_generators =  <<-EOS
+config.generators do |g|
+      g.view_specs false
+      g.stylesheets = false
+      g.javascripts = false
+      g.helper = false
+    end
+EOS
+
+%w( capybara email_spec jasmine_rails render_views timecop vcr webmock ).each do |file|
+  get_file "spec/support/#{file}.rb"
+end
+
+stage_two do
+  remove_dir 'test/' unless ARGV.include?("-T")
+  generate 'rspec:install'
+  environment rspec_config_generators
+
+  comment_lines 'spec/spec_helper.rb', /config.fixture_path.*/
+
+  prepend_to_file 'spec/spec_helper.rb', get_file_partial(:simplecov, 'spec_helper.rb')
+  append_to_file '.gitignore', get_file_partial(:simplecov, '.gitignore')
+
+  commit_changes 'Add RSpec testsuite'
+end
+# >-------------------------- recipes/testsuite.rb ---------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
@@ -507,6 +561,7 @@ end
 
 stage_two
   run_command 'bundle binstubs guard'
+  run_command 'bin/guard init'
 end
 
 %w( rspec rubocop jshintrb jasmine-rails bundler livereload ).each do |plugin|
