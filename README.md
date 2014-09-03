@@ -5,7 +5,7 @@ Want to skip a couple of days of setting up gemfiles, resolving differences in y
 Features
 --------
 * Soup to nuts Rails project setup: If you're on a fresh RVM+Rails install, you're good to go.
-* Vagrant+Berkshelf setup for a Linux server Environment(Ubuntu 12.04+Passenger+Postgres).
+* Vagrant + Ansible setup for a Linux server Environment (Ubuntu 12.04 + Puma + Postgres).
 * Full-featured continuous testing environment setup, with [RSpec](https://github.com/rspec/rspec-rails), [Jasmine](https://github.com/searls/jasmine-rails), [Guard](https://github.com/guard/guard), [Rubocop](https://github.com/bbatsov/rubocop), & [JSHintRB](https://github.com/stereobooster/jshintrb).
 * Service setup for [Travis-CI](https://travis-ci.org/), [New Relic](http://newrelic.com/), [Honeybadger](https://www.honeybadger.io/), even notifications to [Campfire](https://campfirenow.com/). Also, gem setup for [Heroku](https://www.heroku.com/).
 * Common convenience settings for most Rails apps, as well as environment settings for the four usual environments(Development, Test, Staging, Production).
@@ -31,12 +31,12 @@ $ cd myapp
 $ vagrant up --provision
 ```
 
-Your Rails server is already up and running. It's running on passenger, and you can find it at [http://localhost:3000](http://localhost:3000).
+Your Rails server is already up and running. It's running on puma, and you can find it at [http://localhost:3000](http://localhost:3000).
 
 ### Continuous Testing, Testing Suites, & Linters, oh my!
 We employ a wide set of testing tools to help keep things working, keep code quality high, and make sure we're building the right thing, the right way.
 
-#####RSpec
+##### RSpec
 The centerpiece is [**RSpec**](https://github.com/rspec/rspec-rails). We use it as a unit testing framework, while using [Factory Girl](https://github.com/thoughtbot/factory_girl_rails) for fixture generation, and [SimpleCov](https://github.com/colszowka/simplecov) for code coverage. Note, if your test coverage ever falls below 95%, SimpleCov review will exit as an error.
 
 * Some other smaller gem additions to significantly help with test creation and quality have been added, including:
@@ -44,13 +44,13 @@ The centerpiece is [**RSpec**](https://github.com/rspec/rspec-rails). We use it 
   * [Factory Girl RSpec](https://github.com/wireframe/factory_girl_rspec) to make FactoryGirl usage even easier.
   * [Webrat](https://github.com/brynary/webrat) for better view test construction, with useful matchers like 'HaveSelector'.
   * [should_not](https://github.com/should-not/should_not) to help with writing better spec descriptions.
-  * [WeBmock](https://github.com/bblimke/webmock) for better stubbing of any sort of HTTP requests during your tests.
+  * [WebMock](https://github.com/bblimke/webmock) for better stubbing of any sort of HTTP requests during your tests.
   * [VCR](https://github.com/vcr/vcr) for incoming API request testing.
 
-#####Jasmine
+##### Jasmine
 For Javascript testing, we use [Jasmine](https://github.com/searls/jasmine-rails). At any time during development, if you want to see how your tests fare, just head to [http://localhost:3000/specs](http://localhost:3000/specs) and you should get a complete rundown.
 
-####Linters
+#### Linters
 To coding conventions are followed, we use [Rubocop](https://github.com/bbatsov/rubocop) for our Ruby code,
 and [JSHintRB](https://github.com/stereobooster/jshintrb) for Javascript code.
 
