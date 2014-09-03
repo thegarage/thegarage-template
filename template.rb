@@ -691,21 +691,23 @@ say_recipe 'hosting'
 @configs[@current_recipe] = config
 # >--------------------------- recipes/hosting.rb ----------------------------start<
 
-gem 'rails_12factor', group: [:production, :staging]
-
-get_file 'config/secrets.yml'
-get_file 'config/environments/staging.rb'
-
 prefs[:heroku_production_appname] ||= "#{app_name}-production"
 prefs[:heroku_staging_appname] ||= "#{app_name}-staging"
 
-env_secret_key = <<-EOS
+gem 'rails_12factor', group: [:production, :staging]
 
+get_file 'config/environments/staging.rb'
+replace_file 'config/secrets.yml', <<-EOS
+<%= Rails.env %>:
+  secret_key_base: <%= ENV["SECRET_KEY_BASE"] %>
+
+EOS
+append_to_file '.env', <<-EOS
 # secret key used by rails for generating session cookies
 SECRET_KEY_BASE=#{SecureRandom.hex(64)}
 
 EOS
-append_to_file '.env', env_secret_key
+
 commit_changes 'Add heroku/hosting configuration'
 
 stage_two do
