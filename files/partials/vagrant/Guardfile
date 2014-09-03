@@ -1,7 +1,6 @@
 guard :sheller, command: './bin/restart' do
   watch('.env')
   watch('.ruby-version')
-  watch('Gemfile')
   watch('Gemfile.lock')
   watch('config/application.rb')
   watch('config/environment.rb')

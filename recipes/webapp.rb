@@ -10,7 +10,7 @@ append_to_file '.env', get_file_partial(:webapp, '.env')
 get_file 'Procfile'
 get_file 'config/puma.rb'
 
-save_changes "Add webapp config"
+commit_changes "Add webapp config"
 
 additional_application_settings = <<-EOS
 # configure asset hosts for controllers + mailers
@@ -27,7 +27,7 @@ additional_application_settings = <<-EOS
 EOS
 
 stage_two do
-  run_command 'spring binstub puma'
+  run_command 'bundle binstubs puma'
 
   say 'Configuring URL route helpers'
   environment additional_application_settings
@@ -36,7 +36,7 @@ stage_two do
   generate 'simple_form:install --bootstrap'
   generate 'layout:install bootstrap3 -f'
 
-  save_changes 'Add frontend resources/config'
+  commit_changes 'Add frontend resources/config'
 end
 
 __END__

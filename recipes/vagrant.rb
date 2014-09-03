@@ -1,3 +1,5 @@
+gem 'guard-sheller', group: :ct
+
 vagrant_git_ignore_template = <<-EOS
 
 # Vagrant files
@@ -6,15 +8,16 @@ boxes/*
 
 EOS
 
+append_to_file '.gitignore', vagrant_git_ignore_template
+
 stage_two do
   say_wizard 'recipe stage_two'
 
-  append_to_file '.gitignore', vagrant_git_ignore_template
-  branch = 'composer' # FIXME: use master for official release
-  repo = "https://raw.github.com/thegarage/thegarage-template/#{branch}/files/"
-  copy_from_repo 'Procfile', repo: repo
-  copy_from_repo 'Vagrantfile', repo: repo
-  copy_from_repo 'bin/restart', repo: repo
+  get_file 'Vagrantfile'
+  get_file 'bin/restart'
+  chmod 'bin/restart', 0755
+
+  append_to_file 'Guardfile', get_file_partial(:vagrant, 'Guardfile')
 
   # ruby script to get list of all necessary provisioning files
   # Dir.glob('files/provisioning/**/*').each { |f| puts f.gsub(/^files\//, '') unless File.directory?(f) }
@@ -39,14 +42,15 @@ stage_two do
     provisioning/roles/set_locale/tasks/main.yml
   )
   recipes.each do |recipe|
-    copy_from_repo recipe, repo: repo
+    get_file recipe
   end
 
-  ## Git
-  git :add => '-A' if prefer :git, true
-  git :commit => '-qm "rails_apps_composer: setup Vagrant"' if prefer :git, true
-
   run 'bundle package'
+
+  commit_changes 'Setup Vagrant virtualized environment'
+end
+
+stage_two do
   run 'vagrant up'
 end
 

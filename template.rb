@@ -93,7 +93,7 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["continuous_integration", "custom_helpers"]
+@recipes = ["git", "base", "webapp", "rails_javascript", "continuous_integration", "continuous_testing", "hosting", "custom_helpers"]
 @prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"composer", :ci=>"travis", :hosting=>"heroku", :notifier=>"hipchat"}
 @gems = []
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
@@ -288,6 +288,155 @@ end
 # >---------------------------------[ Recipes ]----------------------------------<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
+# >----------------------------------[ git ]----------------------------------<
+@current_recipe = "git"
+@before_configs["git"].call if @before_configs["git"]
+say_recipe 'git'
+@configs[@current_recipe] = config
+# >----------------------------- recipes/git.rb ------------------------------start<
+
+get_file '.gitignore'
+
+gem 'hub', group: :toolbox
+
+commit_changes "Add basic git config"
+
+stage_two do
+  git_uri = `git config remote.origin.url`.strip
+  unless git_uri.size == 0
+    say_wizard "Repository already exists:"
+    say_wizard "#{git_uri}"
+  else
+    say 'Creating private github repository'
+    run "hub create thegarage/#{app_name} -p"
+    run "hub push -u origin master"
+  end
+end
+# >----------------------------- recipes/git.rb ------------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >---------------------------------[ base ]----------------------------------<
+@current_recipe = "base"
+@before_configs["base"].call if @before_configs["base"]
+say_recipe 'base'
+@configs[@current_recipe] = config
+# >----------------------------- recipes/base.rb -----------------------------start<
+
+create_file '.env', ''
+
+say "Configuring app to use ruby #{RUBY_VERSION}"
+create_file '.ruby-version', "#{RUBY_VERSION}\n"
+insert_lines_into_file 'Gemfile', "ruby '#{RUBY_VERSION}'", after: /^source /
+
+say 'Removing sdoc Bundler group'
+gsub_file 'Gemfile', /group :doc do/, ''
+gsub_file 'Gemfile', /\s*gem 'sdoc', require: false\nend/, ''
+
+gem 'dotenv-rails'
+gem 'rails-console-tweaks'
+gem_group :toolbox do
+  gem 'thegarage-gitx'
+  gem 'bundler-reorganizer'
+  gem 'foreman'
+end
+
+commit_changes "Add basic ruby/rails config"
+
+stage_two do
+  say 'Adding lib/autoloaded to autoload_paths'
+  preserve_directory 'lib/autoloaded'
+  environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"
+
+  commit_changes 'Add lib/autoloaded'
+end
+
+stage_three do
+  say 'Reorganizing Gemfile groups'
+  run_command 'bundler-reorganizer Gemfile'
+
+  commit_changes "bundler-reorganizer cleanup of Gemfile"
+end
+# >----------------------------- recipes/base.rb -----------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >--------------------------------[ webapp ]---------------------------------<
+@current_recipe = "webapp"
+@before_configs["webapp"].call if @before_configs["webapp"]
+say_recipe 'webapp'
+@configs[@current_recipe] = config
+# >---------------------------- recipes/webapp.rb ----------------------------start<
+
+gem 'puma'
+gem 'haml'
+gem 'html2haml', group: :toolbox
+gem 'bootstrap-sass'
+gem 'simple_form'
+gem 'rails_layout'
+
+append_to_file '.env', get_file_partial(:webapp, '.env')
+
+get_file 'Procfile'
+get_file 'config/puma.rb'
+
+commit_changes "Add webapp config"
+
+additional_application_settings = <<-EOS
+# configure asset hosts for controllers + mailers
+    # configure url helpers to use the options from env
+    default_url_options = {
+      host: ENV['DEFAULT_URL_HOST'],
+      protocol: ENV['DEFAULT_URL_PROTOCOL']
+    }
+    #{app_name.camelize}::Application.routes.default_url_options = default_url_options
+    config.action_mailer.default_url_options = default_url_options
+
+    # use SSL, use Strict-Transport-Security, and use secure cookies
+    config.force_ssl = (ENV['DEFAULT_URL_PROTOCOL'] == 'https')
+EOS
+
+stage_two do
+  run_command 'bundle binstubs puma'
+
+  say 'Configuring URL route helpers'
+  environment additional_application_settings
+
+  say_wizard "installing simple_form for use with Bootstrap"
+  generate 'simple_form:install --bootstrap'
+  generate 'layout:install bootstrap3 -f'
+
+  commit_changes 'Add frontend resources/config'
+end
+# >---------------------------- recipes/webapp.rb ----------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >---------------------------[ rails_javascript ]----------------------------<
+@current_recipe = "rails_javascript"
+@before_configs["rails_javascript"].call if @before_configs["rails_javascript"]
+say_recipe 'rails_javascript'
+@configs[@current_recipe] = config
+# >----------------------- recipes/rails_javascript.rb -----------------------start<
+
+gem 'jasmine-rails', group: [:development, :test]
+
+stage_two do
+  generate 'jasmine_rails:install'
+
+  say 'Remove turbolinks'
+  gsub_file 'app/assets/javascripts/application.js', %r{^//= require turbolinks$.}m, ''
+  gsub_file 'Gemfile', /^.*turbolinks.*$/, ''
+
+  say 'Disabling config.assets.debug in development environment'
+  comment_lines 'config/environments/development.rb', /config.assets.debug = true/
+
+  commit_changes 'add Javascript settings'
+end
+# >----------------------- recipes/rails_javascript.rb -----------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
 # >------------------------[ continuous_integration ]-------------------------<
 @current_recipe = "continuous_integration"
 @before_configs["continuous_integration"].call if @before_configs["continuous_integration"]
@@ -343,12 +492,65 @@ end
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
+# >--------------------------[ continuous_testing ]---------------------------<
+@current_recipe = "continuous_testing"
+@before_configs["continuous_testing"].call if @before_configs["continuous_testing"]
+say_recipe 'continuous_testing'
+@configs[@current_recipe] = config
+# >---------------------- recipes/continuous_testing.rb ----------------------start<
+
+gem_group :ct do
+  gem 'guard'
+  gem 'terminal-notifier'
+  gem 'terminal-notifier-guard'
+end
+
+stage_two
+  run_command 'bundle binstubs guard'
+end
+
+%w( rspec rubocop jshintrb jasmine-rails bundler livereload ).each do |plugin|
+  gem "guard-#{plugin}", group: :ct
+
+  stage_two do
+    run_command "guard init #{plugin}"
+  end
+end
+
+stage_two do
+  # cleanup unused watches
+  gsub_file 'Guardfile', /  # Capybara features specs.*\z/m, "end\n"
+
+  commit_changes 'Add Continuous Testing libraries'
+end
+# >---------------------- recipes/continuous_testing.rb ----------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >--------------------------------[ hosting ]--------------------------------<
+@current_recipe = "hosting"
+@before_configs["hosting"].call if @before_configs["hosting"]
+say_recipe 'hosting'
+@configs[@current_recipe] = config
+# >--------------------------- recipes/hosting.rb ----------------------------start<
+
+gem 'rails_12factor', group: [:production, :staging]
+
+get_file 'config/environments/staging.rb'
+
+commit_changes 'Add heroku/hosting configuration'
+# >--------------------------- recipes/hosting.rb ----------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
 # >----------------------------[ custom_helpers ]-----------------------------<
 @current_recipe = "custom_helpers"
 @before_configs["custom_helpers"].call if @before_configs["custom_helpers"]
 say_recipe 'custom_helpers'
 @configs[@current_recipe] = config
 # >------------------------ recipes/custom_helpers.rb ------------------------start<
+
+require 'erb'
 
 # shortcut method to delete existing file
 # and replace with new contents
@@ -396,6 +598,12 @@ def download_resource(resource)
     template = ERB.new(contents)
     template.result(binding)
   end
+end
+
+# helper to save changes in git
+def commit_changes(description)
+  git :add => '-A'
+  git :commit => %Q(-qm "thegarage-template: #{description}")
 end
 
 # insert content into existing file

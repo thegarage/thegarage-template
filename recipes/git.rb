@@ -2,7 +2,7 @@ get_file '.gitignore'
 
 gem 'hub', group: :toolbox
 
-save_changes "Add basic git config"
+commit_changes "Add basic git config"
 
 stage_two do
   git_uri = `git config remote.origin.url`.strip

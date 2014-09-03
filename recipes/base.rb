@@ -16,13 +16,21 @@ gem_group :toolbox do
   gem 'foreman'
 end
 
-save_changes "Add basic ruby/rails config"
+commit_changes "Add basic ruby/rails config"
+
+stage_two do
+  say 'Adding lib/autoloaded to autoload_paths'
+  preserve_directory 'lib/autoloaded'
+  environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"
+
+  commit_changes 'Add lib/autoloaded'
+end
 
 stage_three do
   say 'Reorganizing Gemfile groups'
   run_command 'bundler-reorganizer Gemfile'
 
-  save_changes "bundler-reorganizer cleanup of Gemfile"
+  commit_changes "bundler-reorganizer cleanup of Gemfile"
 end
 
 __END__

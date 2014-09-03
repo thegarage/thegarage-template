@@ -6,6 +6,8 @@ recipes:
 - webapp
 - rails_javascript
 - continuous_integration
+- continuous_testing
+- hosting
 
 # set of configurable preferences for the template to run
 prefs:
