@@ -12,7 +12,6 @@ Features
 Prerequisites
 -------------
 * [Rails](https://github.com/rails/rails)
-* [Bundler](http://bundler.io/)
 * [Virtualbox](https://www.virtualbox.org)
 * [Vagrant](http://www.vagrantup.com/)
 * [Ansible](http://www.ansible.com/)

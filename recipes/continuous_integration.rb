@@ -1,3 +1,4 @@
+gem 'travis', group: :toolbox
 gem_group :ci do
   gem 'brakeman'
   gem 'bundler-audit'
@@ -5,19 +6,12 @@ gem_group :ci do
   gem 'rubocop'
 end
 
-if prefer :ci, 'travis'
-  gem 'travis', group: :toolbox
+# if prefer :notifier, 'hipchat'
+#   prefs[:hipchat_api_key] ||= ask_wizard('Hipchat API key for Travis CI Notifications')
+#   prefs[:hipchat_room] ||= ask_wizard('Hipchat Room Name for Build Notifications')
+# end
 
-  if prefer :hosting, 'heroku'
-    prefs[:heroku_production_appname] ||= "#{app_name}-production"
-    prefs[:heroku_staging_appname] ||= "#{app_name}-staging"
-  end
-
-  if prefer :notifier, 'hipchat'
-    prefs[:hipchat_api_key] ||= ask_wizard('Hipchat API key for Build Notifications')
-    prefs[:hipchat_room] ||= ask_wizard('Hipchat Room Name for Build Notifications')
-  end
-end
+get_file '.rubocop.yml'
 
 stage_two do
   say 'Creating rake :ci task'
@@ -29,15 +23,11 @@ stage_two do
   say 'Setting default rake task to :ci'
   append_to_file 'Rakefile', "\ntask default: :ci\n"
 
-  if prefer :ci, 'travis'
-    run_command 'travis enable'
-    say 'Configuring Travis CI build...'
-    get_file '.travis.yml'
+  run_command 'travis enable'
+  say 'Configuring Travis CI build...'
+  get_file '.travis.yml'
 
-    if prefer :hosting, 'heroku'
-      run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
-    end
-  end
+  run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
 
   commit_changes 'Add continuous integration config'
 end

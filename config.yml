@@ -9,16 +9,14 @@ recipes:
 - continuous_integration
 - continuous_testing
 - hosting
-# - vagrant
+- vagrant
 
 # set of configurable preferences for the template to run
 prefs:
   :remote_host: https://raw.github.com/thegarage/thegarage-template
   # TODO: change to master before deployment
   :remote_branch: composer
-  :ci: travis
-  :hosting: heroku
-  :notifier: hipchat
 
 # list of gems to install
 gems:
+- bundler

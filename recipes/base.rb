@@ -1,3 +1,6 @@
+get_file 'CONTRIBUTING.md'
+remove_file 'README.rdoc'
+get_file 'README.md'
 create_file '.env', ''
 
 say "Configuring app to use ruby #{RUBY_VERSION}"

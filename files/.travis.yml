@@ -17,11 +17,11 @@ before_deploy:
   - git buildtag
 
 # see http://docs.travis-ci.com/user/notifications/#HipChat-notification
-notifications:
-  hipchat: <%= prefs[:hipchat_api_key] %>@<%= prefs[:hipchat_room] %>
+# notifications:
+#   hipchat: <%= prefs[:hipchat_api_key] %>@<%= prefs[:hipchat_room] %>
 
 deploy:
-  provider: <%= prefs[:hosting] %>
+  provider: heroku
   strategy: git
   run: rake db:migrate
   app:

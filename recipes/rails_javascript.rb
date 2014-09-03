@@ -1,5 +1,8 @@
 gem 'jasmine-rails', group: [:development, :test]
 
+get_file '.jshintignore'
+get_file '.jshintrc'
+
 stage_two do
   generate 'jasmine_rails:install'
 
