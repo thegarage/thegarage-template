@@ -608,8 +608,8 @@ if prefer :ci, 'travis'
   gem 'travis', group: :toolbox
 
   if prefer :hosting, 'heroku'
-    prefs[:heroku_production_appname] ||= ask_wizard('Heroku production application name')
-    prefs[:heroku_staging_appname] ||= ask_wizard('Heroku staging application name')
+    prefs[:heroku_production_appname] ||= "#{app_name}-production"
+    prefs[:heroku_staging_appname] ||= "#{app_name}-staging"
   end
 
   if prefer :notifier, 'hipchat'
