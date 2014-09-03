@@ -93,7 +93,7 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["git", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "hosting", "custom_helpers"]
+@recipes = ["custom_helpers", "git_new", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "hosting"]
 @prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"composer", :ci=>"travis", :hosting=>"heroku", :notifier=>"hipchat"}
 @gems = []
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
@@ -288,12 +288,111 @@ end
 # >---------------------------------[ Recipes ]----------------------------------<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
-# >----------------------------------[ git ]----------------------------------<
-@current_recipe = "git"
-@before_configs["git"].call if @before_configs["git"]
-say_recipe 'git'
+# >----------------------------[ custom_helpers ]-----------------------------<
+@current_recipe = "custom_helpers"
+@before_configs["custom_helpers"].call if @before_configs["custom_helpers"]
+say_recipe 'custom_helpers'
 @configs[@current_recipe] = config
-# >----------------------------- recipes/git.rb ------------------------------start<
+# >------------------------ recipes/custom_helpers.rb ------------------------start<
+
+require 'erb'
+
+# shortcut method to delete existing file
+# and replace with new contents
+def replace_file(filename, data)
+  remove_file filename
+  create_file filename, data
+end
+
+# helper method to run a command and ensure success
+# by default the thor run command does *not* exit
+# the process when the command fails
+def run_command(command, options = {})
+  status = run(command, options)
+  fail "#{command} failed" unless status
+end
+
+# add .gitkeep placeholder file so that the directory stays checked into git
+def preserve_directory(directory)
+  path = File.join(directory, '.gitkeep')
+  create_file path, ''
+end
+
+# download remote file from remote repo and save to local path
+# the downloaded resources *may* contain dynamic ERB statements
+# that will be automatically evaluated once downloaded
+def get_file(path)
+  remove_file path
+  resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', path)
+  replace_file path, download_resource(resource)
+end
+
+# download partial file contents and process through ERB
+# return the processed string
+def get_file_partial(category, path)
+  resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', 'partials', category.to_s, path)
+  download_resource resource
+end
+
+# download remote file contents and process through ERB
+# return the processed string
+def download_resource(resource)
+  say "Downloading resource: #{resource}"
+  open(resource) do |input|
+    contents = input.binmode.read
+    template = ERB.new(contents)
+    template.result(binding)
+  end
+end
+
+# helper to save changes in git
+def commit_changes(description)
+  git :add => '-A'
+  git :commit => %Q(-qm "thegarage-template: #{description}")
+end
+
+# insert content into existing file
+# automatically add newlines before/after content
+# supports matching indentation of matched line
+def insert_lines_into_file(path, content, options = {})
+  target_line = options[:before] || options[:after]
+  target_line = Regexp.escape(target_line) unless target_line.is_a?(Regexp)
+  target_line = /#{target_line}.*\n/
+  options[:before] = target_line if options[:before]
+  options[:after] = target_line if options[:after]
+  indent = ''
+  File.open(path, 'r') do |file|
+    file.each_line(path) do |line|
+      if line =~ target_line
+        indent = line.scan(/^\s+/).first
+      end
+    end
+  end
+  indent ||= ''
+  indent.chomp!
+
+  if options[:indent].to_i > 0
+    indent += (' ' * options[:indent].to_i)
+  end
+
+  indented_content = ''
+  content.each_line do |line|
+    indented_content += line.blank? ? line : (indent + line)
+  end
+  indented_content += "\n"
+
+  insert_into_file path, indented_content, options
+end
+# >------------------------ recipes/custom_helpers.rb ------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >--------------------------------[ git_new ]--------------------------------<
+@current_recipe = "git_new"
+@before_configs["git_new"].call if @before_configs["git_new"]
+say_recipe 'git_new'
+@configs[@current_recipe] = config
+# >--------------------------- recipes/git_new.rb ----------------------------start<
 
 get_file '.gitignore'
 
@@ -312,7 +411,7 @@ stage_two do
     # run "hub push -u origin master"
   end
 end
-# >----------------------------- recipes/git.rb ------------------------------end<
+# >--------------------------- recipes/git_new.rb ----------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
@@ -422,7 +521,7 @@ say_recipe 'testsuite'
 # >-------------------------- recipes/testsuite.rb ---------------------------start<
 
 gem_group [:development, :test] do
-  gem 'rspec-rails',
+  gem 'rspec-rails'
   gem 'factory_girl_rails'
 end
 gem 'spring-commands-rspec', group: :development
@@ -437,7 +536,7 @@ gem_group :test do
   gem 'webmock'
 end
 
-rspec_config_generators =  <<-EOS
+rspec_config_generators = <<-EOS
 config.generators do |g|
       g.view_specs false
       g.stylesheets = false
@@ -559,7 +658,7 @@ gem_group :ct do
   gem 'terminal-notifier-guard'
 end
 
-stage_two
+stage_two do
   run_command 'bundle binstubs guard'
   run_command 'bin/guard init'
 end
@@ -595,105 +694,6 @@ get_file 'config/environments/staging.rb'
 
 commit_changes 'Add heroku/hosting configuration'
 # >--------------------------- recipes/hosting.rb ----------------------------end<
-# >-------------------------- templates/recipe.erb ---------------------------end<
-
-# >-------------------------- templates/recipe.erb ---------------------------start<
-# >----------------------------[ custom_helpers ]-----------------------------<
-@current_recipe = "custom_helpers"
-@before_configs["custom_helpers"].call if @before_configs["custom_helpers"]
-say_recipe 'custom_helpers'
-@configs[@current_recipe] = config
-# >------------------------ recipes/custom_helpers.rb ------------------------start<
-
-require 'erb'
-
-# shortcut method to delete existing file
-# and replace with new contents
-def replace_file(filename, data)
-  remove_file filename
-  create_file filename, data
-end
-
-# helper method to run a command and ensure success
-# by default the thor run command does *not* exit
-# the process when the command fails
-def run_command(command, options = {})
-  status = run(command, options)
-  fail "#{command} failed" unless status
-end
-
-# add .gitkeep placeholder file so that the directory stays checked into git
-def preserve_directory(directory)
-  path = File.join(directory, '.gitkeep')
-  create_file path, ''
-end
-
-# download remote file from remote repo and save to local path
-# the downloaded resources *may* contain dynamic ERB statements
-# that will be automatically evaluated once downloaded
-def get_file(path)
-  remove_file path
-  resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', path)
-  replace_file path, download_resource(resource)
-end
-
-# download partial file contents and process through ERB
-# return the processed string
-def get_file_partial(category, path)
-  resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', 'partials', category.to_s, path)
-  download_resource resource
-end
-
-# download remote file contents and process through ERB
-# return the processed string
-def download_resource(resource)
-  say "Downloading resource: #{resource}"
-  open(resource) do |input|
-    contents = input.binmode.read
-    template = ERB.new(contents)
-    template.result(binding)
-  end
-end
-
-# helper to save changes in git
-def commit_changes(description)
-  git :add => '-A'
-  git :commit => %Q(-qm "thegarage-template: #{description}")
-end
-
-# insert content into existing file
-# automatically add newlines before/after content
-# supports matching indentation of matched line
-def insert_lines_into_file(path, content, options = {})
-  target_line = options[:before] || options[:after]
-  target_line = Regexp.escape(target_line) unless target_line.is_a?(Regexp)
-  target_line = /#{target_line}.*\n/
-  options[:before] = target_line if options[:before]
-  options[:after] = target_line if options[:after]
-  indent = ''
-  File.open(path, 'r') do |file|
-    file.each_line(path) do |line|
-      if line =~ target_line
-        indent = line.scan(/^\s+/).first
-      end
-    end
-  end
-  indent ||= ''
-  indent.chomp!
-
-  if options[:indent].to_i > 0
-    indent += (' ' * options[:indent].to_i)
-  end
-
-  indented_content = ''
-  content.each_line do |line|
-    indented_content += line.blank? ? line : (indent + line)
-  end
-  indented_content += "\n"
-
-  insert_into_file path, indented_content, options
-end
-# >------------------------ recipes/custom_helpers.rb ------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 

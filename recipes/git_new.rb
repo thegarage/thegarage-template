@@ -18,7 +18,7 @@ end
 
 __END__
 
-name: git
+name: git_new
 description: 'Git initialization'
 author: wireframe
 requires: [custom_helpers]

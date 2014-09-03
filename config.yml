@@ -1,6 +1,7 @@
 # ordered list of recipes to run
 recipes:
-- git
+- custom_helpers
+- git_new
 - base
 - webapp
 - testsuite

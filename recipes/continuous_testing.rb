@@ -4,7 +4,7 @@ gem_group :ct do
   gem 'terminal-notifier-guard'
 end
 
-stage_two
+stage_two do
   run_command 'bundle binstubs guard'
   run_command 'bin/guard init'
 end
