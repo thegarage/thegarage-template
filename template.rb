@@ -93,9 +93,9 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "hosting"]
-@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"composer", :ci=>"travis", :hosting=>"heroku", :notifier=>"hipchat"}
-@gems = []
+@recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "hosting", "vagrant"]
+@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"composer"}
+@gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
 @diagnostics_prefs = []
 diagnostics = {}
@@ -423,6 +423,9 @@ say_recipe 'base'
 @configs[@current_recipe] = config
 # >----------------------------- recipes/base.rb -----------------------------start<
 
+get_file 'CONTRIBUTING.md'
+remove_file 'README.rdoc'
+get_file 'README.md'
 create_file '.env', ''
 
 say "Configuring app to use ruby #{RUBY_VERSION}"
@@ -575,6 +578,9 @@ say_recipe 'rails_javascript'
 
 gem 'jasmine-rails', group: [:development, :test]
 
+get_file '.jshintignore'
+get_file '.jshintrc'
+
 stage_two do
   generate 'jasmine_rails:install'
 
@@ -598,6 +604,7 @@ say_recipe 'continuous_integration'
 @configs[@current_recipe] = config
 # >-------------------- recipes/continuous_integration.rb --------------------start<
 
+gem 'travis', group: :toolbox
 gem_group :ci do
   gem 'brakeman'
   gem 'bundler-audit'
@@ -605,19 +612,12 @@ gem_group :ci do
   gem 'rubocop'
 end
 
-if prefer :ci, 'travis'
-  gem 'travis', group: :toolbox
+# if prefer :notifier, 'hipchat'
+#   prefs[:hipchat_api_key] ||= ask_wizard('Hipchat API key for Travis CI Notifications')
+#   prefs[:hipchat_room] ||= ask_wizard('Hipchat Room Name for Build Notifications')
+# end
 
-  if prefer :hosting, 'heroku'
-    prefs[:heroku_production_appname] ||= "#{app_name}-production"
-    prefs[:heroku_staging_appname] ||= "#{app_name}-staging"
-  end
-
-  if prefer :notifier, 'hipchat'
-    prefs[:hipchat_api_key] ||= ask_wizard('Hipchat API key for Build Notifications')
-    prefs[:hipchat_room] ||= ask_wizard('Hipchat Room Name for Build Notifications')
-  end
-end
+get_file '.rubocop.yml'
 
 stage_two do
   say 'Creating rake :ci task'
@@ -629,15 +629,11 @@ stage_two do
   say 'Setting default rake task to :ci'
   append_to_file 'Rakefile', "\ntask default: :ci\n"
 
-  if prefer :ci, 'travis'
-    run_command 'travis enable'
-    say 'Configuring Travis CI build...'
-    get_file '.travis.yml'
+  run_command 'travis enable'
+  say 'Configuring Travis CI build...'
+  get_file '.travis.yml'
 
-    if prefer :hosting, 'heroku'
-      run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
-    end
-  end
+  run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
 
   commit_changes 'Add continuous integration config'
 end
@@ -697,7 +693,78 @@ gem 'rails_12factor', group: [:production, :staging]
 get_file 'config/environments/staging.rb'
 
 commit_changes 'Add heroku/hosting configuration'
+
+prefs[:heroku_production_appname] ||= "#{app_name}-production"
+prefs[:heroku_staging_appname] ||= "#{app_name}-staging"
+
+stage_two do
+  run_command "heroku apps:create #{prefs[:heroku_production_appname]}"
+  run_command "heroku apps:create #{prefs[:heroku_staging_appname]}"
+
+  run_command "heroku config:set RAILS_ENV=staging --app #{prefs[:heroku_staging_appname]}"
+  run_command "heroku config:set RACK_ENV=staging --app #{prefs[:heroku_staging_appname]}"
+end
 # >--------------------------- recipes/hosting.rb ----------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >--------------------------------[ vagrant ]--------------------------------<
+@current_recipe = "vagrant"
+@before_configs["vagrant"].call if @before_configs["vagrant"]
+say_recipe 'vagrant'
+@configs[@current_recipe] = config
+# >--------------------------- recipes/vagrant.rb ----------------------------start<
+
+gem 'guard-sheller', group: :ct
+
+append_to_file '.gitignore', get_file_partial(:vagrant, '.gitignore')
+get_file 'Vagrantfile'
+get_file 'config/database.yml'
+
+get_file 'bin/restart'
+chmod 'bin/restart', 0755
+
+append_to_file 'Guardfile', get_file_partial(:vagrant, 'Guardfile')
+
+# ruby script to get list of all necessary provisioning files
+# Dir.glob('files/provisioning/**/*').each { |f| puts f.gsub(/^files\//, '') unless File.directory?(f) }
+recipes = %w(
+  provisioning/rails_developer.yml
+  provisioning/roles/core/tasks/main.yml
+  provisioning/roles/gemrc/files/gemrc
+  provisioning/roles/gemrc/tasks/main.yml
+  provisioning/roles/nodejs/tasks/main.yml
+  provisioning/roles/phantomjs/tasks/main.yml
+  provisioning/roles/postgresql/files/pg_hba.conf
+  provisioning/roles/postgresql/files/pgdg.list
+  provisioning/roles/postgresql/handlers/main.yml
+  provisioning/roles/postgresql/tasks/main.yml
+  provisioning/roles/postgresql/vars/main.yml
+  provisioning/roles/rails_setup/files/vm_rails_setup.sh
+  provisioning/roles/rails_setup/tasks/main.yml
+  provisioning/roles/ruby/tasks/main.yml
+  provisioning/roles/ruby/templates/rbenv.sh.j2
+  provisioning/roles/ruby/vars/main.yml
+  provisioning/roles/set_locale/files/lang.sh
+  provisioning/roles/set_locale/tasks/main.yml
+)
+recipes.each do |recipe|
+  get_file recipe
+end
+
+commit_changes 'Setup Vagrant virtualized environment'
+
+stage_two do
+  run 'bundle package'
+
+  commit_changes 'package gems'
+  run 'vagrant up'
+end
+
+stage_three do
+  run 'open http://localhost:3000'
+end
+# >--------------------------- recipes/vagrant.rb ----------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 
