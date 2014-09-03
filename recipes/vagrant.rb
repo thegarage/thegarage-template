@@ -50,6 +50,10 @@ stage_two do
   run 'vagrant up'
 end
 
+stage_three do
+  run 'open http://localhost:3000'
+end
+
 __END__
 
 name: vagrant

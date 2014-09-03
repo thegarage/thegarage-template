@@ -1,7 +1,10 @@
 # ordered list of recipes to run
 recipes:
 # - vagrant
-# - rails_javascript
+- git
+- base
+- webapp
+- rails_javascript
 - continuous_integration
 
 # set of configurable preferences for the template to run

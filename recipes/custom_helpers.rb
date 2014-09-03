@@ -1,3 +1,5 @@
+require 'erb'
+
 # shortcut method to delete existing file
 # and replace with new contents
 def replace_file(filename, data)
@@ -44,6 +46,12 @@ def download_resource(resource)
     template = ERB.new(contents)
     template.result(binding)
   end
+end
+
+# helper to save changes in git
+def commit_changes(description)
+  git :add => '-A'
+  git :commit => %Q(-qm "thegarage-template: #{description}")
 end
 
 # insert content into existing file
