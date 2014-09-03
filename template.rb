@@ -741,8 +741,6 @@ get_file 'config/database.yml'
 get_file 'bin/restart'
 chmod 'bin/restart', 0755
 
-append_to_file 'Guardfile', get_file_partial(:vagrant, 'Guardfile')
-
 # ruby script to get list of all necessary provisioning files
 # Dir.glob('files/provisioning/**/*').each { |f| puts f.gsub(/^files\//, '') unless File.directory?(f) }
 recipes = %w(
@@ -772,6 +770,8 @@ end
 commit_changes 'Setup Vagrant virtualized environment'
 
 stage_two do
+  append_to_file 'Guardfile', get_file_partial(:vagrant, 'Guardfile')
+
   run 'bundle package'
 
   commit_changes 'package gems'
