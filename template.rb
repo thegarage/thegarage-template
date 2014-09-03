@@ -93,7 +93,7 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["custom_helpers", "git_new", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "hosting"]
+@recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "hosting"]
 @prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"composer", :ci=>"travis", :hosting=>"heroku", :notifier=>"hipchat"}
 @gems = []
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
@@ -387,12 +387,12 @@ end
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
-# >--------------------------------[ git_new ]--------------------------------<
-@current_recipe = "git_new"
-@before_configs["git_new"].call if @before_configs["git_new"]
-say_recipe 'git_new'
+# >-------------------------------[ git_init ]--------------------------------<
+@current_recipe = "git_init"
+@before_configs["git_init"].call if @before_configs["git_init"]
+say_recipe 'git_init'
 @configs[@current_recipe] = config
-# >--------------------------- recipes/git_new.rb ----------------------------start<
+# >--------------------------- recipes/git_init.rb ---------------------------start<
 
 get_file '.gitignore'
 
@@ -407,12 +407,12 @@ stage_two do
     say_wizard "Repository already exists:"
     say_wizard "#{git_uri}"
   else
-    say 'TODO: Creating private github repository'
-    # run "hub create thegarage/#{app_name} -p"
-    # run "hub push -u origin master"
+    say 'Creating private github repository'
+    run "hub create thegarage/#{app_name} -p"
+    run "hub push -u origin master"
   end
 end
-# >--------------------------- recipes/git_new.rb ----------------------------end<
+# >--------------------------- recipes/git_init.rb ---------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
