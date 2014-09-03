@@ -6,6 +6,7 @@ end
 
 stage_two
   run_command 'bundle binstubs guard'
+  run_command 'bin/guard init'
 end
 
 %w( rspec rubocop jshintrb jasmine-rails bundler livereload ).each do |plugin|

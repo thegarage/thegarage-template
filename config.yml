@@ -1,13 +1,14 @@
 # ordered list of recipes to run
 recipes:
-# - vagrant
 - git
 - base
 - webapp
+- testsuite
 - rails_javascript
 - continuous_integration
 - continuous_testing
 - hosting
+# - vagrant
 
 # set of configurable preferences for the template to run
 prefs:

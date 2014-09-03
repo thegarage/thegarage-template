@@ -10,6 +10,8 @@ gsub_file 'Gemfile', /\s*gem 'sdoc', require: false\nend/, ''
 
 gem 'dotenv-rails'
 gem 'rails-console-tweaks'
+gem 'pry-rails'
+
 gem_group :toolbox do
   gem 'thegarage-gitx'
   gem 'bundler-reorganizer'
