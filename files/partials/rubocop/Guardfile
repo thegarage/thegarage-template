@@ -1,7 +1,0 @@
-guard :rubocop, all_on_start: false, cli: ['--rails'] do
-  ignore(%r{db/schema\.rb})
-  ignore(%r{vendor/.+\.rb})
-  ignore(%r{chef/.+\.rb})
-  watch(%r{.+\.rb$})
-  watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }
-end

@@ -520,7 +520,7 @@ say_recipe 'testsuite'
 @configs[@current_recipe] = config
 # >-------------------------- recipes/testsuite.rb ---------------------------start<
 
-gem_group [:development, :test] do
+gem_group :development, :test do
   gem 'rspec-rails'
   gem 'factory_girl_rails'
 end
