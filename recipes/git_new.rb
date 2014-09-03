@@ -2,6 +2,7 @@ get_file '.gitignore'
 
 gem 'hub', group: :toolbox
 
+git :init
 commit_changes "Add basic git config"
 
 stage_two do

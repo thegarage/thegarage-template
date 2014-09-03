@@ -398,6 +398,7 @@ get_file '.gitignore'
 
 gem 'hub', group: :toolbox
 
+git :init
 commit_changes "Add basic git config"
 
 stage_two do
@@ -629,6 +630,7 @@ stage_two do
   append_to_file 'Rakefile', "\ntask default: :ci\n"
 
   if prefer :ci, 'travis'
+    run_command 'travis enable'
     say 'Configuring Travis CI build...'
     get_file '.travis.yml'
 
@@ -636,6 +638,8 @@ stage_two do
       run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
     end
   end
+
+  commit_changes 'Add continuous integration config'
 end
 
 stage_three do
