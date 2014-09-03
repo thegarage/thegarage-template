@@ -1,5 +1,5 @@
-get_file 'CONTRIBUTING.md'
 remove_file 'README.rdoc'
+get_file 'CONTRIBUTING.md'
 get_file 'README.md'
 create_file '.env', ''
 
@@ -14,6 +14,7 @@ gsub_file 'Gemfile', /\s*gem 'sdoc', require: false\nend/, ''
 gem 'dotenv-rails'
 gem 'rails-console-tweaks'
 gem 'pry-rails'
+gem 'pg'
 
 gem_group :toolbox do
   gem 'thegarage-gitx'
@@ -24,6 +25,8 @@ end
 commit_changes "Add basic ruby/rails config"
 
 stage_two do
+  run_command 'bundle binstubs spring'
+
   say 'Adding lib/autoloaded to autoload_paths'
   preserve_directory 'lib/autoloaded'
   environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"

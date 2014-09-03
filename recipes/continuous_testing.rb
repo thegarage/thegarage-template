@@ -13,7 +13,7 @@ end
   gem "guard-#{plugin}", group: :ct
 
   stage_two do
-    run_command "guard init #{plugin}"
+    run_command "bin/guard init #{plugin}"
   end
 end
 

@@ -423,8 +423,8 @@ say_recipe 'base'
 @configs[@current_recipe] = config
 # >----------------------------- recipes/base.rb -----------------------------start<
 
-get_file 'CONTRIBUTING.md'
 remove_file 'README.rdoc'
+get_file 'CONTRIBUTING.md'
 get_file 'README.md'
 create_file '.env', ''
 
@@ -439,6 +439,7 @@ gsub_file 'Gemfile', /\s*gem 'sdoc', require: false\nend/, ''
 gem 'dotenv-rails'
 gem 'rails-console-tweaks'
 gem 'pry-rails'
+gem 'pg'
 
 gem_group :toolbox do
   gem 'thegarage-gitx'
@@ -449,6 +450,8 @@ end
 commit_changes "Add basic ruby/rails config"
 
 stage_two do
+  run_command 'bundle binstubs spring'
+
   say 'Adding lib/autoloaded to autoload_paths'
   preserve_directory 'lib/autoloaded'
   environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"
@@ -667,7 +670,7 @@ end
   gem "guard-#{plugin}", group: :ct
 
   stage_two do
-    run_command "guard init #{plugin}"
+    run_command "bin/guard init #{plugin}"
   end
 end
 
@@ -690,19 +693,31 @@ say_recipe 'hosting'
 
 gem 'rails_12factor', group: [:production, :staging]
 
+get_file 'config/secrets.yml'
 get_file 'config/environments/staging.rb'
-
-commit_changes 'Add heroku/hosting configuration'
 
 prefs[:heroku_production_appname] ||= "#{app_name}-production"
 prefs[:heroku_staging_appname] ||= "#{app_name}-staging"
 
+env_secret_key = <<-EOS
+
+# secret key used by rails for generating session cookies
+SECRET_KEY_BASE=#{SecureRandom.hex(64)}
+
+EOS
+append_to_file '.env', env_secret_key
+commit_changes 'Add heroku/hosting configuration'
+
 stage_two do
   run_command "heroku apps:create #{prefs[:heroku_production_appname]}"
-  run_command "heroku apps:create #{prefs[:heroku_staging_appname]}"
+  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{prefs[:heroku_production_appname]}"
+end
 
+stage_two do
+  run_command "heroku apps:create #{prefs[:heroku_staging_appname]}"
   run_command "heroku config:set RAILS_ENV=staging --app #{prefs[:heroku_staging_appname]}"
   run_command "heroku config:set RACK_ENV=staging --app #{prefs[:heroku_staging_appname]}"
+  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{prefs[:heroku_staging_appname]}"
 end
 # >--------------------------- recipes/hosting.rb ----------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
