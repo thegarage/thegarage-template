@@ -1,5 +1,7 @@
-gem 'email_preview'
-gem 'mailcatcher', group: 'toolbox'
+gem 'email_preview', group: :development
+gem 'mailcatcher', group: :toolbox
+
+get_file 'config/initializers/email_preview.rb'
 
 append_to_file '.env', get_file_partial(:email, '.env')
 append_to_file 'Procfile', get_file_partial(:email, 'Procfile')

@@ -484,11 +484,14 @@ gem 'html2haml', group: :toolbox
 gem 'bootstrap-sass'
 gem 'simple_form'
 gem 'rails_layout'
+gem 'high_voltage'
 
 append_to_file '.env', get_file_partial(:webapp, '.env')
 
 get_file 'Procfile'
 get_file 'config/puma.rb'
+get_file 'config/initializers/high_voltage.rb'
+get_file 'app/views/pages/home.html.haml'
 
 commit_changes "Add webapp config"
 
@@ -693,8 +696,10 @@ say_recipe 'email_init'
 @configs[@current_recipe] = config
 # >-------------------------- recipes/email_init.rb --------------------------start<
 
-gem 'email_preview'
-gem 'mailcatcher', group: 'toolbox'
+gem 'email_preview', group: :development
+gem 'mailcatcher', group: :toolbox
+
+get_file 'config/initializers/email_preview.rb'
 
 append_to_file '.env', get_file_partial(:email, '.env')
 append_to_file 'Procfile', get_file_partial(:email, 'Procfile')
