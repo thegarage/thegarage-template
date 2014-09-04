@@ -93,7 +93,7 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "hosting", "vagrant"]
+@recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "vagrant"]
 @prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"composer"}
 @gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
@@ -460,6 +460,8 @@ stage_two do
 end
 
 stage_three do
+  run_command 'spring binstubs --all'
+
   say 'Reorganizing Gemfile groups'
   run_command 'bundler-reorganizer Gemfile'
 
@@ -684,6 +686,33 @@ end
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
+# >------------------------------[ email_init ]-------------------------------<
+@current_recipe = "email_init"
+@before_configs["email_init"].call if @before_configs["email_init"]
+say_recipe 'email_init'
+@configs[@current_recipe] = config
+# >-------------------------- recipes/email_init.rb --------------------------start<
+
+gem 'email_preview'
+gem 'mailcatcher', group: 'toolbox'
+
+append_to_file '.env', get_file_partial(:email, '.env')
+append_to_file 'Procfile', get_file_partial(:email, 'Procfile')
+
+smtp_applicationrb = <<-EOS
+config.action_mailer.smtp_settings = {
+      port: ENV['SMTP_PORT'],
+      address: ENV['SMTP_SERVER']
+    }
+EOS
+
+stage_two do
+  environment smtp_applicationrb
+end
+# >-------------------------- recipes/email_init.rb --------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
 # >--------------------------------[ hosting ]--------------------------------<
 @current_recipe = "hosting"
 @before_configs["hosting"].call if @before_configs["hosting"]
@@ -735,6 +764,7 @@ say_recipe 'vagrant'
 gem 'guard-sheller', group: :ct
 
 append_to_file '.gitignore', get_file_partial(:vagrant, '.gitignore')
+append_to_file '.env', get_file_partial(:vagrant, '.env')
 get_file 'Vagrantfile'
 get_file 'config/database.yml'
 
@@ -776,6 +806,7 @@ stage_two do
 
   commit_changes 'package gems'
   run 'vagrant up'
+  rake 'db:create'
 end
 
 stage_three do

@@ -22,5 +22,4 @@ __END__
 name: git_init
 description: 'Git initialization'
 author: wireframe
-requires: [custom_helpers]
 category: other

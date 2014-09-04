@@ -1,6 +1,7 @@
 gem 'guard-sheller', group: :ct
 
 append_to_file '.gitignore', get_file_partial(:vagrant, '.gitignore')
+append_to_file '.env', get_file_partial(:vagrant, '.env')
 get_file 'Vagrantfile'
 get_file 'config/database.yml'
 
@@ -42,6 +43,7 @@ stage_two do
 
   commit_changes 'package gems'
   run 'vagrant up'
+  rake 'db:create'
 end
 
 stage_three do

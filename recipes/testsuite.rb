@@ -45,5 +45,4 @@ __END__
 name: testsuite
 description: 'Application Testsuite'
 author: wireframe
-requires: [custom_helpers]
 category: other

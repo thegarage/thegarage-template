@@ -41,5 +41,4 @@ __END__
 name: continuous_integration
 description: 'Setup Continuous Integration for the Rails Project'
 author: wireframe
-requires: [custom_helpers]
 category: other

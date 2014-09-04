@@ -44,5 +44,4 @@ __END__
 name: webapp
 description: 'Setup Webapp Dependencies'
 author: wireframe
-requires: [custom_helpers]
 category: other

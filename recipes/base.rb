@@ -35,6 +35,8 @@ stage_two do
 end
 
 stage_three do
+  run_command 'spring binstubs --all'
+
   say 'Reorganizing Gemfile groups'
   run_command 'bundler-reorganizer Gemfile'
 
@@ -46,5 +48,4 @@ __END__
 name: base
 description: 'Base template settings'
 author: wireframe
-requires: [custom_helpers]
 category: other

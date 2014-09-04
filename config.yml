@@ -8,6 +8,7 @@ recipes:
 - rails_javascript
 - continuous_integration
 - continuous_testing
+- email_init
 - hosting
 - vagrant
 
