@@ -5,7 +5,7 @@ namespace :bundler do
     require 'English'
     output = `bundle-audit`
     puts output
-    success = !!$CHILD_STATUS.to_i
-    fail "bunder:audit failed" unless success
+    status_code = $CHILD_STATUS.to_i
+    fail "bunder:audit failed" unless status_code == 0
   end
 end

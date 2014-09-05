@@ -1,9 +1,8 @@
 AllCops:
   Excludes:
-    - 'db/schema.rb'
-    - 'vendor/*'
-    - 'chef/*'
-    - 'bin/*'
+    - db/schema.rb
+    - vendor/**/*
+    - bin/**/*
 
 # Allow longer lines
 LineLength:
