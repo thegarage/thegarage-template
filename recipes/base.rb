@@ -28,11 +28,14 @@ stage_two do
   say 'Removing sqlite3 gem'
   gsub_file 'Gemfile', /^.*sqlite3.*$/, ''
 
-  run_command 'bundle binstubs spring'
-
   say 'Adding lib/autoloaded to autoload_paths'
   preserve_directory 'lib/autoloaded'
   environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"
+
+  say 'setting default time zone to Central Time'
+  environment "config.time_zone = 'Central Time (US & Canada)'"
+
+  run_command 'bundle binstubs spring'
 
   commit_changes 'Add lib/autoloaded'
 end

@@ -16,10 +16,6 @@ before_deploy:
   - git config --global user.name "Buildbot (Travis CI)"
   - git buildtag
 
-# see http://docs.travis-ci.com/user/notifications/#HipChat-notification
-# notifications:
-#   hipchat: <%= prefs[:hipchat_api_key] %>@<%= prefs[:hipchat_room] %>
-
 deploy:
   provider: heroku
   strategy: git

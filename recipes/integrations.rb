@@ -25,6 +25,20 @@ if honeybadger_api_key
   get_file 'config/initializers/honeybadger.rb'
 end
 
+
+hipchat_api_key = ask_wizard('Hipchat Notification API Key')
+hipchat_room = ask_wizard('Hipchat Room')
+hipchat_travis_template = <<-EOS
+
+# see http://docs.travis-ci.com/user/notifications/#HipChat-notification
+notifications:
+  hipchat: #{hipchat_api_key}@#{hipchat_room}
+EOS
+
+if hipchat_api_key
+  append_to_file '.travis.yml', hipchat_travis_template
+end
+
 commit_changes 'Add 3rd party integrations'
 
 __END__
