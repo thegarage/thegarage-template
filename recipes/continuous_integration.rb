@@ -12,24 +12,22 @@ end
 # end
 
 get_file '.rubocop.yml'
+get_file 'lib/tasks/ci.rake'
+get_file 'lib/tasks/brakeman.rake'
+get_file 'lib/tasks/bundler_audit.rake'
+get_file 'lib/tasks/bundler_outdated.rake'
+get_file 'lib/tasks/rubocop.rake'
+get_file 'lib/tasks/jshint.rake'
+
+get_file '.travis.yml'
+append_to_file 'Rakefile', "\ntask default: :ci\n"
+commit_changes 'Add continuous integration config'
 
 stage_two do
-  say 'Creating rake :ci task'
-  get_file 'lib/tasks/ci.rake'
-  get_file 'lib/tasks/brakeman.rake'
-  get_file 'lib/tasks/bundler_audit.rake'
-  get_file 'lib/tasks/bundler_outdated.rake'
-
-  say 'Setting default rake task to :ci'
-  append_to_file 'Rakefile', "\ntask default: :ci\n"
-
   run_command 'travis enable'
-  say 'Configuring Travis CI build...'
-  get_file '.travis.yml'
-
   run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
 
-  commit_changes 'Add continuous integration config'
+  commit_changes 'Add continuous deployment config'
 end
 
 stage_three do
