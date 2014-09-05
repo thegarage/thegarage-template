@@ -16,18 +16,17 @@ get_file 'lib/tasks/jshint.rake'
 
 get_file '.travis.yml'
 append_to_file 'Rakefile', "\ntask default: :ci\n"
+
 commit_changes 'Add continuous integration config'
 
 stage_two do
+  run_command "travis enable -r thegarage/#{app_name}"
   append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
 
   run_command 'bundle binstubs bundler-audit'
   run_command 'bundle binstubs brakeman'
 
-  run_command "travis enable -r thegarage/#{app_name}"
-  run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
-
-  commit_changes 'Add continuous deployment config'
+  commit_changes 'Add binstubs'
 end
 
 stage_three do

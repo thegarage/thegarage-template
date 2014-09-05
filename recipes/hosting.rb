@@ -1,5 +1,5 @@
-prefs[:heroku_production_appname] ||= "#{app_name}-production"
-prefs[:heroku_staging_appname] ||= "#{app_name}-staging"
+heroku_production_appname = "#{app_name}-production"
+heroku_staging_appname = "#{app_name}-staging"
 
 gem 'rails_12factor', group: [:production, :staging]
 
@@ -15,26 +15,40 @@ SECRET_KEY_BASE=#{SecureRandom.hex(64)}
 
 EOS
 
-commit_changes 'Add heroku/hosting configuration'
+heroku_travis_template = <<-EOS
+
+deploy:
+  provider: heroku
+  strategy: git
+  run: rake db:migrate
+  app:
+    master: #{heroku_production_appname}
+    staging: #{heroku_staging_appname}
+EOS
 
 stage_two do
-  run_command "heroku apps:create #{prefs[:heroku_production_appname]}"
-  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{prefs[:heroku_production_appname]}"
-  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{prefs[:heroku_production_appname]}"
-  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{prefs[:heroku_production_appname]}"
+  append_to_file '.travis.yml', heroku_travis_template
+  run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
+
+  commit_changes "Add continuous deployment configuration"
+
+  run_command "heroku apps:create #{heroku_production_appname}"
+  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{heroku_production_appname}"
+  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{heroku_production_appname}"
+  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{heroku_production_appname}"
 end
 
 stage_two do
-  run_command "heroku apps:create #{prefs[:heroku_staging_appname]}"
-  run_command "heroku config:set RAILS_ENV=staging --app #{prefs[:heroku_staging_appname]}"
-  run_command "heroku config:set RACK_ENV=staging --app #{prefs[:heroku_staging_appname]}"
-  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{prefs[:heroku_staging_appname]}"
-  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{prefs[:heroku_staging_appname]}"
+  run_command "heroku apps:create #{heroku_staging_appname}"
+  run_command "heroku config:set RAILS_ENV=staging --app #{heroku_staging_appname}"
+  run_command "heroku config:set RACK_ENV=staging --app #{heroku_staging_appname}"
+  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{heroku_staging_appname}"
+  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{heroku_staging_appname}"
 end
 
 stage_three do
-  run_command "open http://#{prefs[:heroku_production_appname]}.herokuapp.com"
-  run_command "open http://#{prefs[:heroku_staging_appname]}.herokuapp.com"
+  run_command "open http://#{heroku_production_appname}.herokuapp.com"
+  run_command "open http://#{heroku_staging_appname}.herokuapp.com"
 end
 
 __END__
