@@ -622,7 +622,7 @@ say_recipe 'continuous_integration'
 @configs[@current_recipe] = config
 # >-------------------- recipes/continuous_integration.rb --------------------start<
 
-gem 'travis', group: :toolbox
+gem 'travis', '>= 1.7.1', group: :toolbox
 gem_group :ci do
   gem 'brakeman'
   gem 'bundler-audit'

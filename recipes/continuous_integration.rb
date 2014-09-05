@@ -1,4 +1,4 @@
-gem 'travis', group: :toolbox
+gem 'travis', '>= 1.7.1', group: :toolbox
 gem_group :ci do
   gem 'brakeman'
   gem 'bundler-audit'
