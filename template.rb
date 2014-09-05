@@ -469,6 +469,7 @@ stage_three do
   run_command 'spring binstubs --all'
 
   say 'Reorganizing Gemfile groups'
+  run_command 'bundle binstubs bundler-reorganizer'
   run_command 'bundler-reorganizer Gemfile'
 
   say 'Cleaning up lint issues'
@@ -643,11 +644,12 @@ append_to_file 'Rakefile', "\ntask default: :ci\n"
 commit_changes 'Add continuous integration config'
 
 stage_two do
-  run_command "travis enable -r thegarage/#{app_name}"
-  append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
-
   run_command 'bundle binstubs bundler-audit'
   run_command 'bundle binstubs brakeman'
+  run_command 'bundle binstubs travis'
+
+  run_command "bin/travis enable -r thegarage/#{app_name}"
+  append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
 
   commit_changes 'Add binstubs'
 end
@@ -766,7 +768,7 @@ EOS
 
 stage_two do
   append_to_file '.travis.yml', heroku_travis_template
-  run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
+  run_command 'bin/travis encrypt $(heroku auth:token) --add deploy.api_key'
 
   commit_changes "Add continuous deployment configuration"
 

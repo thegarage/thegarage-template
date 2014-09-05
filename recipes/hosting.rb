@@ -28,7 +28,7 @@ EOS
 
 stage_two do
   append_to_file '.travis.yml', heroku_travis_template
-  run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
+  run_command 'bin/travis encrypt $(heroku auth:token) --add deploy.api_key'
 
   commit_changes "Add continuous deployment configuration"
 

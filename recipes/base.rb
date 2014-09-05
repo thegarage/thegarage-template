@@ -44,6 +44,7 @@ stage_three do
   run_command 'spring binstubs --all'
 
   say 'Reorganizing Gemfile groups'
+  run_command 'bundle binstubs bundler-reorganizer'
   run_command 'bundler-reorganizer Gemfile'
 
   say 'Cleaning up lint issues'

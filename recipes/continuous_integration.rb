@@ -20,11 +20,12 @@ append_to_file 'Rakefile', "\ntask default: :ci\n"
 commit_changes 'Add continuous integration config'
 
 stage_two do
-  run_command "travis enable -r thegarage/#{app_name}"
-  append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
-
   run_command 'bundle binstubs bundler-audit'
   run_command 'bundle binstubs brakeman'
+  run_command 'bundle binstubs travis'
+
+  run_command "bin/travis enable -r thegarage/#{app_name}"
+  append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
 
   commit_changes 'Add binstubs'
 end
