@@ -472,7 +472,7 @@ stage_three do
   run_command 'bundler-reorganizer Gemfile'
 
   say 'Cleaning up lint issues'
-  run_command 'rubocop -a'
+  run 'rubocop -a'
 
   commit_changes "cleanup project resources"
 end
