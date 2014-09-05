@@ -738,8 +738,8 @@ say_recipe 'hosting'
 @configs[@current_recipe] = config
 # >--------------------------- recipes/hosting.rb ----------------------------start<
 
-heroku_production_appname = "#{app_name}-production"
-heroku_staging_appname = "#{app_name}-staging"
+heroku_production_appname = "thegarage-#{app_name}-production"
+heroku_staging_appname = "thegarage-#{app_name}-staging"
 
 gem 'rails_12factor', group: [:production, :staging]
 
