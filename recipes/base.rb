@@ -40,7 +40,10 @@ stage_three do
   say 'Reorganizing Gemfile groups'
   run_command 'bundler-reorganizer Gemfile'
 
-  commit_changes "bundler-reorganizer cleanup of Gemfile"
+  say 'Cleaning up lint issues'
+  run_command 'rubocop -a'
+
+  commit_changes "cleanup project resources"
 end
 
 __END__
