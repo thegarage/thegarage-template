@@ -6,8 +6,10 @@ Features
 --------
 * Virtualized local development environment
 * Full Rails + Javascript testsuite w/ linters (RSpec, Jasmine, Rubocop, JSHint)
+* Complete continuous integration and continuous deployment configuration (Github, Travis CI, Heroku)
 * Continuous testing environment
-* Various 3rd party integrations (NewRelic, Honeybadger, Travis CI, etc)
+* Local development environment email setup
+* Various 3rd party integrations (NewRelic, Honeybadger, etc)
 
 Prerequisites
 -------------
@@ -26,7 +28,10 @@ to enter the relevant API Keys/Tokens for services and configure your app:
 $ rails new myapp -m https://raw.github.com/thegarage/thegarage-template/master/template.rb -T
 ```
 
-Your Rails server is now up and running at [http://localhost:3000](http://localhost:3000).
+Your Rails server is now up and running:
+* [Local development environment](http://localhost:3000)
+* Heroku staging environment: http://myapp-staging.herokuapp.com
+* Heroku production environment: http://myapp-production.herokuapp.com
 
 Implementation
 --------------
