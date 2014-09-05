@@ -14,10 +14,11 @@ recipes:
 - vagrant
 
 # set of configurable preferences for the template to run
+# change the remote_branch to a feature branch when testing
+# changes
 prefs:
   :remote_host: https://raw.github.com/thegarage/thegarage-template
-  # TODO: change to master before deployment
-  :remote_branch: composer
+  :remote_branch: master
 
 # list of gems to install
 gems:
