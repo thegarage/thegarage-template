@@ -787,6 +787,7 @@ stage_two do
 end
 
 stage_three do
+  run 'git remote rm heroku'
   run_command "open http://#{heroku_production_appname}.herokuapp.com"
   run_command "open http://#{heroku_staging_appname}.herokuapp.com"
 end
