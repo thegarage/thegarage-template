@@ -6,6 +6,7 @@ recipes:
 - webapp
 - testsuite
 - rails_javascript
+- integrations
 - continuous_integration
 - continuous_testing
 - email_init

@@ -13,8 +13,13 @@ config.action_mailer.smtp_settings = {
     }
 EOS
 
+commit_changes 'Add email config'
+
 stage_two do
   environment smtp_applicationrb
+  run_command 'bundle binstubs mailcatcher'
+
+  commit_changes 'Add email config'
 end
 
 __END__
