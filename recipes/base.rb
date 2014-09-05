@@ -25,6 +25,9 @@ end
 commit_changes "Add basic ruby/rails config"
 
 stage_two do
+  say 'Removing sqlite3 gem'
+  gsub_file 'Gemfile', /^.*sqlite3.*$/, ''
+
   run_command 'bundle binstubs spring'
 
   say 'Adding lib/autoloaded to autoload_paths'
