@@ -24,6 +24,11 @@ append_to_file 'Rakefile', "\ntask default: :ci\n"
 commit_changes 'Add continuous integration config'
 
 stage_two do
+  append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
+
+  run_command 'bundle binstubs bundler-audit'
+  run_command 'bundle binstubs brakeman'
+
   run_command 'travis enable'
   run_command 'travis encrypt $(heroku auth:token) --add deploy.api_key'
 

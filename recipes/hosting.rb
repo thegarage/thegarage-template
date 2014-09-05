@@ -20,7 +20,8 @@ commit_changes 'Add heroku/hosting configuration'
 stage_two do
   run_command "heroku apps:create #{prefs[:heroku_production_appname]}"
   run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{prefs[:heroku_production_appname]}"
-  # TODO: set BUNDLER_WITHOUT env
+  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{prefs[:heroku_production_appname]}"
+  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{prefs[:heroku_production_appname]}"
 end
 
 stage_two do
@@ -28,7 +29,12 @@ stage_two do
   run_command "heroku config:set RAILS_ENV=staging --app #{prefs[:heroku_staging_appname]}"
   run_command "heroku config:set RACK_ENV=staging --app #{prefs[:heroku_staging_appname]}"
   run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{prefs[:heroku_staging_appname]}"
-  # TODO: set BUNDLER_WITHOUT env
+  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{prefs[:heroku_staging_appname]}"
+end
+
+stage_three do
+  run_command "open http://#{prefs[:heroku_production_appname]}.herokuapp.com"
+  run_command "open http://#{prefs[:heroku_staging_appname]}.herokuapp.com"
 end
 
 __END__
