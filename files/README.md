@@ -1,15 +1,16 @@
-### Wondering where to go from here?
+# <%= app_name %>
 
-`vagrant up --provision`
+## Hosting
 
-Or, you can separately do `vagrant up` and `vagrant provision`. Same thing, split into two.
+[Production](http://<%= prefs[:heroku_production_appname] %>.herokuapp.com)
 
-That'll get your VM running. This also has your Rails server already started- just check [http://localhost:3000/](http://localhost:3000/). If you check it sometime during development and it's down, shell into this folder and execute `touch tmp/restart.txt` to restart it.
+[Staging](http://<%= prefs[:heroku_staging_appname] %>.herokuapp.com)
 
-You're ready to get started.
+## Source Code
+https://github.com/thegarage/<%= app_name %>
 
-If you're a designer, feel free to put new views inside of `/app/views/static`.
+## Development Environment
 
-If you're a developer, you're good to do whatever you want. When you're ready to hit production, don't forget to add your new NewRelic license to the `.env` file.
-
-## And don't forget to update this!
+```bash
+$ open http://localhost:3000
+```

@@ -1,7 +1,0 @@
-if defined?(Rubocop)
-  require 'rubocop/rake_task'
-  Rubocop::RakeTask.new do |task|
-    task.patterns = ['--rails']
-  end
-  default_tasks << :rubocop
-end

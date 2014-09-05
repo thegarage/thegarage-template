@@ -4,17 +4,16 @@ Want to skip a couple of days of setting up gemfiles, resolving differences in y
 
 Features
 --------
-* Soup to nuts Rails project setup: If you're on a fresh RVM+Rails install, you're good to go.
-* Vagrant + Ansible setup for a Linux server Environment (Ubuntu 12.04 + Puma + Postgres).
-* Full-featured continuous testing environment setup, with [RSpec](https://github.com/rspec/rspec-rails), [Jasmine](https://github.com/searls/jasmine-rails), [Guard](https://github.com/guard/guard), [Rubocop](https://github.com/bbatsov/rubocop), & [JSHintRB](https://github.com/stereobooster/jshintrb).
-* Service setup for [Travis-CI](https://travis-ci.org/), [New Relic](http://newrelic.com/), [Honeybadger](https://www.honeybadger.io/), even notifications to [Campfire](https://campfirenow.com/). Also, gem setup for [Heroku](https://www.heroku.com/).
-* Common convenience settings for most Rails apps, as well as environment settings for the four usual environments(Development, Test, Staging, Production).
-* Full e-mail setup and support, getting you ready for development with [Mailcatcher](https://github.com/sj26/mailcatcher) as a local send/recieve SMTP server, [E-mail Preview](https://github.com/wireframe/email_preview), and [testing helpers/matchers](https://github.com/bmabey/email-spec).
+* Virtualized local development environment
+* Full Rails + Javascript testsuite w/ linters (RSpec, Jasmine, Rubocop, JSHint)
+* Complete continuous integration and continuous deployment configuration (Github, Travis CI, Heroku)
+* Continuous testing environment
+* Local development environment email setup
+* Various 3rd party integrations (NewRelic, Honeybadger, etc)
 
 Prerequisites
 -------------
-* [Rails 4.1](https://github.com/rails/rails)
-* [Bundler](http://bundler.io/)
+* [Rails](https://github.com/rails/rails)
 * [Virtualbox](https://www.virtualbox.org)
 * [Vagrant](http://www.vagrantup.com/)
 * [Ansible](http://www.ansible.com/)
@@ -26,71 +25,33 @@ Generate new rails project, and the template will automatically prompt you
 to enter the relevant API Keys/Tokens for services and configure your app:
 
 ```
-$ rails new myapp -m https://raw.github.com/thegarage/thegarage-template/master/template.rb
-$ cd myapp
-$ vagrant up --provision
+$ rails new myapp -m https://raw.github.com/thegarage/thegarage-template/master/template.rb -T
 ```
 
-Your Rails server is already up and running. It's running on puma, and you can find it at [http://localhost:3000](http://localhost:3000).
+Your Rails server is now up and running:
+* [Local development environment](http://localhost:3000)
+* Heroku staging environment: http://myapp-staging.herokuapp.com
+* Heroku production environment: http://myapp-production.herokuapp.com
 
-### Continuous Testing, Testing Suites, & Linters, oh my!
-We employ a wide set of testing tools to help keep things working, keep code quality high, and make sure we're building the right thing, the right way.
+Implementation
+--------------
+* Built with the [Rails apps composer framework](https://github.com/RailsApps/rails_apps_composer)
+* Composed into [separate recipies](/recipes) for maintainability
 
-##### RSpec
-The centerpiece is [**RSpec**](https://github.com/rspec/rspec-rails). We use it as a unit testing framework, while using [Factory Girl](https://github.com/thoughtbot/factory_girl_rails) for fixture generation, and [SimpleCov](https://github.com/colszowka/simplecov) for code coverage. Note, if your test coverage ever falls below 95%, SimpleCov review will exit as an error.
+Development
+-----------
+```bash
+# install necessary gems
+$ bundle
+```
 
-* Some other smaller gem additions to significantly help with test creation and quality have been added, including:
-  * [shoulda-matchers](https://github.com/thoughtbot/shoulda-matchers) to give a multitude of extremely useful matchers. Seriously, go read their Readme for just some.
-  * [Factory Girl RSpec](https://github.com/wireframe/factory_girl_rspec) to make FactoryGirl usage even easier.
-  * [Webrat](https://github.com/brynary/webrat) for better view test construction, with useful matchers like 'HaveSelector'.
-  * [should_not](https://github.com/should-not/should_not) to help with writing better spec descriptions.
-  * [WebMock](https://github.com/bblimke/webmock) for better stubbing of any sort of HTTP requests during your tests.
-  * [VCR](https://github.com/vcr/vcr) for incoming API request testing.
+```bash
+# compile recipies into uber template
+$ bin/generate_template
 
-##### Jasmine
-For Javascript testing, we use [Jasmine](https://github.com/searls/jasmine-rails). At any time during development, if you want to see how your tests fare, just head to [http://localhost:3000/specs](http://localhost:3000/specs) and you should get a complete rundown.
-
-#### Linters
-To coding conventions are followed, we use [Rubocop](https://github.com/bbatsov/rubocop) for our Ruby code,
-and [JSHintRB](https://github.com/stereobooster/jshintrb) for Javascript code.
-
-#### Testsuite
-
-Our default rake command includes a comprehensive suite of operations to ensure that Continuous Integration services work out of the box.
-* full run of all Rspec + headless Jasmine tests
-* linting of Ruby/Javascript files
-* security scan for known security vulnerabilities ([Brakeman](http://brakemanscanner.org/), [Bundler-Audit](https://github.com/rubysec/bundler-audit))
-
-#### Continuous Testing: Guard
-We use Guard to keep all of the above going, every time we develop. No, really. After your project is created and you're inside it, just run `bundle exec guard`, write your tests, and make things. You'll see immediate results, so you can properly follow [Red/Green/Refactor](http://en.wikipedia.org/wiki/Test-driven_development#Development_style).
-
-#### Pry
-We've included [Pry](http://pryrepl.org/) and [Pry-Remote](https://github.com/Mon-Ouie/pry-remote) for debugging. Pry gives some amazing debugging tools, and Pry-Remote makes them available from even browser requests.
-
-### Email
-After your `vagrant up --provision`, you can immediately see at [http://localhost:1080](http://localhost:1080) your Mailcatcher server. Any e-mails sent out from development mode will be caught here, for your review to be sure everything's working properly.
-
-#### E-mail Previews
-Once you begin making any e-mails, you can use [Email Preview](https://github.com/wireframe/email_preview#usage) to see how they look, with full styling and header information.
-
-#### E-mail Specs
-You can get a full list of Helpers/Matchers for the e-mail testing system we use from [the Email Spec README](https://github.com/bmabey/email-spec#rspec-1).
-
-Services
---------
-We include automatic setup for several services.
-
-* [**TravisCI**](https://travis-ci.com/) for continuous integration, or rather, for testing in server-like settings, as well as potentially as a deployment platform. We've also included automatic notification to [Campfire](https://campfirenow.com/) rooms from TravisCI.
-* [**NewRelic**](http://www.newrelic.com/) for web app performance and monitoring.
-* [**Honeybadger**](http://honeybadger.io/) for error management and logging.
-* [**Heroku**](https://www.heroku.com/) for getting your app up onto the web as fast as possible. We've included the [rails_12factor](https://github.com/heroku/rails_12factor) gem to get you on their service as fast as possible.
-
-Common Convenience Settings
----------------------------
-* We turn off generators for helpers, stylesheets, and javascripts by default. Also, views won't produce specs by default.
-* We set the time zone to Central Time(US & Canada). It can be changed quickly in **config/application.rb**.
-* We've got some convenience settings related to Bundler groups, including debug for Pry.
-
+# generate local example rails app for testing
+$ bin/generate_example_app
+```
 
 [Contributing](CONTRIBUTING.md)
 ------------

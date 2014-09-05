@@ -1,10 +1,11 @@
 ---
-- name: core | core essentials 
+- name: core | core essentials
   apt: name={{ item }} state=latest update_cache=yes
   sudo: yes
   with_items:
     - build-essential
+    - cmake
     - vim
     - git
     - curl
-    - cmake
+    - libsqlite3-dev

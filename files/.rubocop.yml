@@ -1,9 +1,9 @@
 AllCops:
-  Excludes:
-    - 'db/schema.rb'
-    - 'vendor/*'
-    - 'chef/*'
-    - 'bin/*'
+  Exclude:
+    - db/schema.rb
+    - vendor/**/*
+    - bin/**/*
+    - Guardfile
 
 # Allow longer lines
 LineLength:
