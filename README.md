@@ -1,14 +1,16 @@
 Garage Template
 ==============
-Want to skip a couple of days of setting up gemfiles, resolving differences in your RSpec configuration? Drop the creation of files you don't use usually make use of anyway? The Template will get you right past all of that.
+
+Start your new application off on the right foot with all of the gems, tools and configuration necessary to build awesome apps.
 
 Features
 --------
-* Virtualized local development environment
+* Static Rails webapp (Bootstrap, jQuery, HAML)
+* Virtualized local development environment (Vagrant, Virtualbox)
 * Full Rails + Javascript testsuite w/ linters (RSpec, Jasmine, Rubocop, JSHint)
 * Complete continuous integration and continuous deployment configuration (Github, Travis CI, Heroku)
 * Continuous testing environment
-* Local development environment email setup
+* Email configuration
 * Various 3rd party integrations (NewRelic, Honeybadger, etc)
 
 Prerequisites
@@ -28,7 +30,7 @@ to enter the relevant API Keys/Tokens for services and configure your app:
 $ rails new myapp -m https://raw.github.com/thegarage/thegarage-template/master/template.rb -T
 ```
 
-Your Rails server is now up and running:
+Your Rails server is now up and running across local/staging/production environments:
 * [Local development environment](http://localhost:3000)
 * Heroku staging environment: http://myapp-staging.herokuapp.com
 * Heroku production environment: http://myapp-production.herokuapp.com
