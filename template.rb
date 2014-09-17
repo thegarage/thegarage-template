@@ -94,7 +94,7 @@ end
 def add_gem(*all) Gemfile.add(*all); end
 
 @recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
-@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"master"}
+@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"master", :github_organization=>"thegarage"}
 @gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
 @diagnostics_prefs = []
@@ -383,6 +383,14 @@ def insert_lines_into_file(path, content, options = {})
 
   insert_into_file path, indented_content, options
 end
+
+def github_slug
+  [prefs[:github_organization], app_name].join('/')
+end
+
+def heroku_appname(env)
+  [prefs[:github_organization], app_name, env].join('-')
+end
 # >------------------------ recipes/custom_helpers.rb ------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
@@ -408,8 +416,8 @@ stage_two do
     say_wizard "#{git_uri}"
   else
     say 'Creating private github repository'
-    run "hub create thegarage/#{app_name} -p"
-    run "hub push -u origin master"
+    run_command "hub create #{github_slug} -p"
+    run_command "hub push -u origin master"
   end
 end
 # >--------------------------- recipes/git_init.rb ---------------------------end<
@@ -647,13 +655,13 @@ stage_two do
   run_command 'bundle binstubs bundler-audit'
   run_command 'bundle binstubs brakeman'
   run_command 'bundle binstubs travis'
-  run_command "bin/travis enable -r thegarage/#{app_name}"
-  say "When prompted for GitHub credentials, use your deployment " + 
-      "user's account and not your personal account."
-  run_command "bin/travis sshkey -g -r thegarage/#{app_name}"
+  run_command "bin/travis enable -r #{github_slug}"
+
+  say "Login as the Github deployer account **not** your personal account!"
+  run_command "bin/travis sshkey -g -r #{github_slug}"
   append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
 
-  commit_changes 'Add binstubs'
+  commit_changes 'Add continuous integration dependencies'
 end
 
 stage_three do
@@ -740,9 +748,6 @@ say_recipe 'hosting'
 @configs[@current_recipe] = config
 # >--------------------------- recipes/hosting.rb ----------------------------start<
 
-heroku_production_appname = "thegarage-#{app_name}-production"
-heroku_staging_appname = "thegarage-#{app_name}-staging"
-
 gem 'rails_12factor', group: [:production, :staging]
 
 get_file 'config/environments/staging.rb'
@@ -764,34 +769,48 @@ deploy:
   strategy: git
   run: rake db:migrate
   app:
-    master: #{heroku_production_appname}
-    staging: #{heroku_staging_appname}
+    master: #{heroku_appname('production')}
+    staging: #{heroku_appname('staging')}
 EOS
 
 stage_two do
   append_to_file '.travis.yml', heroku_travis_template
+
+  say 'Login with the Heroku deployer account **not** your personal account!'
+  run_command 'heroku auth:logout'
+  run_command 'heroku auth:login'
   run_command 'bin/travis encrypt $(heroku auth:token) --add deploy.api_key'
+  run_command 'heroku auth:logout'
 
   commit_changes "Add continuous deployment configuration"
-
-  run_command "heroku apps:create #{heroku_production_appname}"
-  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{heroku_production_appname}"
-  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{heroku_production_appname}"
-  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{heroku_production_appname}"
 end
 
-stage_two do
-  run_command "heroku apps:create #{heroku_staging_appname}"
-  run_command "heroku config:set RAILS_ENV=staging --app #{heroku_staging_appname}"
-  run_command "heroku config:set RACK_ENV=staging --app #{heroku_staging_appname}"
-  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{heroku_staging_appname}"
-  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{heroku_staging_appname}"
+heroku_appname('production').tap do |app|
+  stage_two do
+    run_command "heroku apps:create #{app}"
+    run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
+    run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
+  end
+  stage_three do
+    run_command "open http://#{app}.herokuapp.com"
+  end
+end
+
+heroku_appname('staging').tap do |app|
+  stage_two do
+    run_command "heroku apps:create #{app}"
+    run_command "heroku config:set RAILS_ENV=staging --app #{app}"
+    run_command "heroku config:set RACK_ENV=staging --app #{app}"
+    run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
+    run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
+  end
+  stage_three do
+    run_command "open http://#{app}.herokuapp.com"
+  end
 end
 
 stage_three do
   run 'git remote rm heroku'
-  run_command "open http://#{heroku_production_appname}.herokuapp.com"
-  run_command "open http://#{heroku_staging_appname}.herokuapp.com"
 end
 # >--------------------------- recipes/hosting.rb ----------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<

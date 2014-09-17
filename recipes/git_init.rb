@@ -12,8 +12,8 @@ stage_two do
     say_wizard "#{git_uri}"
   else
     say 'Creating private github repository'
-    run "hub create thegarage/#{app_name} -p"
-    run "hub push -u origin master"
+    run_command "hub create #{github_slug} -p"
+    run_command "hub push -u origin master"
   end
 end
 

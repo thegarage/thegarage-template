@@ -87,6 +87,14 @@ def insert_lines_into_file(path, content, options = {})
   insert_into_file path, indented_content, options
 end
 
+def github_slug
+  [prefs[:github_organization], app_name].join('/')
+end
+
+def heroku_appname(env)
+  [prefs[:github_organization], app_name, env].join('-')
+end
+
 __END__
 
 name: custom_helpers

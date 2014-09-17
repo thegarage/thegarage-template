@@ -23,13 +23,13 @@ stage_two do
   run_command 'bundle binstubs bundler-audit'
   run_command 'bundle binstubs brakeman'
   run_command 'bundle binstubs travis'
-  run_command "bin/travis enable -r thegarage/#{app_name}"
-  say "When prompted for GitHub credentials, use your deployment " + 
-      "user's account and not your personal account."
-  run_command "bin/travis sshkey -g -r thegarage/#{app_name}"
+  run_command "bin/travis enable -r #{github_slug}"
+
+  say "Login as the Github deployer account **not** your personal account!"
+  run_command "bin/travis sshkey -g -r #{github_slug}"
   append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
 
-  commit_changes 'Add binstubs'
+  commit_changes 'Add continuous integration dependencies'
 end
 
 stage_three do

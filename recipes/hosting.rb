@@ -1,6 +1,3 @@
-heroku_production_appname = "thegarage-#{app_name}-production"
-heroku_staging_appname = "thegarage-#{app_name}-staging"
-
 gem 'rails_12factor', group: [:production, :staging]
 
 get_file 'config/environments/staging.rb'
@@ -22,34 +19,48 @@ deploy:
   strategy: git
   run: rake db:migrate
   app:
-    master: #{heroku_production_appname}
-    staging: #{heroku_staging_appname}
+    master: #{heroku_appname('production')}
+    staging: #{heroku_appname('staging')}
 EOS
 
 stage_two do
   append_to_file '.travis.yml', heroku_travis_template
+
+  say 'Login with the Heroku deployer account **not** your personal account!'
+  run_command 'heroku auth:logout'
+  run_command 'heroku auth:login'
   run_command 'bin/travis encrypt $(heroku auth:token) --add deploy.api_key'
+  run_command 'heroku auth:logout'
 
   commit_changes "Add continuous deployment configuration"
-
-  run_command "heroku apps:create #{heroku_production_appname}"
-  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{heroku_production_appname}"
-  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{heroku_production_appname}"
-  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{heroku_production_appname}"
 end
 
-stage_two do
-  run_command "heroku apps:create #{heroku_staging_appname}"
-  run_command "heroku config:set RAILS_ENV=staging --app #{heroku_staging_appname}"
-  run_command "heroku config:set RACK_ENV=staging --app #{heroku_staging_appname}"
-  run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{heroku_staging_appname}"
-  run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{heroku_staging_appname}"
+heroku_appname('production').tap do |app|
+  stage_two do
+    run_command "heroku apps:create #{app}"
+    run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
+    run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
+  end
+  stage_three do
+    run_command "open http://#{app}.herokuapp.com"
+  end
+end
+
+heroku_appname('staging').tap do |app|
+  stage_two do
+    run_command "heroku apps:create #{app}"
+    run_command "heroku config:set RAILS_ENV=staging --app #{app}"
+    run_command "heroku config:set RACK_ENV=staging --app #{app}"
+    run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
+    run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
+  end
+  stage_three do
+    run_command "open http://#{app}.herokuapp.com"
+  end
 end
 
 stage_three do
   run 'git remote rm heroku'
-  run_command "open http://#{heroku_production_appname}.herokuapp.com"
-  run_command "open http://#{heroku_staging_appname}.herokuapp.com"
 end
 
 __END__

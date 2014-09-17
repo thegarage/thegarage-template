@@ -19,6 +19,7 @@ recipes:
 prefs:
   :remote_host: https://raw.github.com/thegarage/thegarage-template
   :remote_branch: master
+  :github_organization: thegarage
 
 # list of gems to install
 gems:

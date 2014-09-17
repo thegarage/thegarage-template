@@ -2,12 +2,11 @@
 
 ## Hosting
 
-[Production](http://<%= prefs[:heroku_production_appname] %>.herokuapp.com)
-
-[Staging](http://<%= prefs[:heroku_staging_appname] %>.herokuapp.com)
+* [Production](http://<%= heroku_appname('production') %>.herokuapp.com)
+* [Staging](http://<%= heroku_appname('staging') %>.herokuapp.com)
 
 ## Source Code
-https://github.com/thegarage/<%= app_name %>
+https://github.com/<%= github_slug %>
 
 ## Development Environment
 
