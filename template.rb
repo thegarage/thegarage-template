@@ -622,7 +622,7 @@ say_recipe 'continuous_integration'
 @configs[@current_recipe] = config
 # >-------------------- recipes/continuous_integration.rb --------------------start<
 
-gem 'travis', '>= 1.7.1', group: :toolbox
+gem 'travis', '>= 1.7.2', group: :toolbox
 gem_group :ci do
   gem 'brakeman'
   gem 'bundler-audit'
@@ -647,8 +647,10 @@ stage_two do
   run_command 'bundle binstubs bundler-audit'
   run_command 'bundle binstubs brakeman'
   run_command 'bundle binstubs travis'
-
   run_command "bin/travis enable -r thegarage/#{app_name}"
+  say "When prompted for GitHub credentials, use your deployment " + 
+      "user's account and not your personal account."
+  run_command "bin/travis sshkey -g -r thegarage/#{app_name}"
   append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
 
   commit_changes 'Add binstubs'
