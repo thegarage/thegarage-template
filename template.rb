@@ -788,9 +788,12 @@ stage_two do
   run_command 'heroku auth:logout'
   run_command 'heroku auth:login'
   run_command 'bin/travis encrypt $(heroku auth:token) --add deploy.api_key'
-  run_command 'heroku auth:logout'
 
   commit_changes "Add continuous deployment configuration"
+end
+
+stage_three do
+  run_command 'heroku auth:logout'
 end
 
 heroku_appname('production').tap do |app|
