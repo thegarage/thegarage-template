@@ -877,7 +877,7 @@ notifications:
   hipchat: #{hipchat_api_key}@#{hipchat_room}
 EOS
 
-unless hipchat_api_key.to_s.empty?
+unless hipchat_api_key.to_s.empty? || hipchat_room.to_s.empty?
   append_to_file '.travis.yml', hipchat_travis_template
 end
 
