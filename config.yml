@@ -20,6 +20,7 @@ prefs:
   :remote_host: https://raw.github.com/thegarage/thegarage-template
   :remote_branch: master
   :github_organization: thegarage
+  :github_deployer_account: admin@thegarage.us
 
 # list of gems to install
 gems:

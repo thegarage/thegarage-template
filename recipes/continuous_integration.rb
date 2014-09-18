@@ -1,4 +1,8 @@
-gem 'travis', '>= 1.7.2', group: :toolbox
+# install latest version of travis gem
+`gem install travis`
+latest_version = `travis -v`.chomp
+gem 'travis', ">= #{latest_version}", group: :toolbox
+
 gem_group :ci do
   gem 'brakeman'
   gem 'bundler-audit'
@@ -20,14 +24,18 @@ append_to_file 'Rakefile', "\ntask default: :ci\n"
 commit_changes 'Add continuous integration config'
 
 stage_two do
+  append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
   run_command 'bundle binstubs bundler-audit'
   run_command 'bundle binstubs brakeman'
   run_command 'bundle binstubs travis'
-  run_command "bin/travis enable -r #{github_slug}"
 
+  say 'Configuring Continuous Integration...'
   say "Login as the Github deployer account **not** your personal account!"
+  run_command 'bin/travis logout'
+  run_command "bin/travis login -u #{prefs[:github_deployer_account]} --pro"
+  run_command "bin/travis enable -r #{github_slug}"
   run_command "bin/travis sshkey -g -r #{github_slug}"
-  append_to_file '.gitignore', get_file_partial(:travis, '.gitignore')
+  run_command 'bin/travis logout'
 
   commit_changes 'Add continuous integration dependencies'
 end
