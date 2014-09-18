@@ -479,7 +479,7 @@ stage_two do
 end
 
 stage_three do
-  run_command 'spring binstubs --all'
+  run_command 'bin/spring binstubs --all'
 
   say_wizard 'Reorganizing Gemfile groups'
   run_command 'bundle binstubs bundler-reorganizer'
