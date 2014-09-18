@@ -45,7 +45,7 @@ stage_three do
 
   say_wizard 'Reorganizing Gemfile groups'
   run_command 'bundle binstubs bundler-reorganizer'
-  run_command 'bundler-reorganizer Gemfile'
+  run_command 'bin/bundler-reorganizer Gemfile'
 
   say_wizard 'Cleaning up lint issues'
   run 'rubocop -a'
