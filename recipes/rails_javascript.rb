@@ -6,11 +6,11 @@ get_file '.jshintrc'
 stage_two do
   generate 'jasmine_rails:install'
 
-  say 'Remove turbolinks'
+  say_wizard 'Remove turbolinks'
   gsub_file 'app/assets/javascripts/application.js', %r{^//= require turbolinks$.}m, ''
   gsub_file 'Gemfile', /^.*turbolinks.*$/, ''
 
-  say 'Disabling config.assets.debug in development environment'
+  say_wizard 'Disabling config.assets.debug in development environment'
   comment_lines 'config/environments/development.rb', /config.assets.debug = true/
 
   commit_changes 'add Javascript settings'

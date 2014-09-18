@@ -26,7 +26,7 @@ EOS
 stage_two do
   append_to_file '.travis.yml', heroku_travis_template
 
-  say 'Login with the Heroku deployer account **not** your personal account!'
+  say_wizard 'Login with the Heroku deployer account **not** your personal account!'
   run_command 'heroku auth:logout'
   run_command 'heroku auth:login'
   run_command 'bin/travis encrypt $(heroku auth:token) --add deploy.api_key'

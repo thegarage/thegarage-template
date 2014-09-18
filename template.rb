@@ -416,7 +416,7 @@ stage_two do
     say_wizard "Repository already exists:"
     say_wizard "#{git_uri}"
   else
-    say 'Creating private github repository'
+    say_wizard 'Creating private github repository'
     run_command "hub create #{github_slug} -p"
     run_command "hub push -u origin master"
   end
@@ -437,11 +437,11 @@ get_file 'CONTRIBUTING.md'
 get_file 'README.md'
 create_file '.env', ''
 
-say "Configuring app to use ruby #{RUBY_VERSION}"
+say_wizard "Configuring app to use ruby #{RUBY_VERSION}"
 create_file '.ruby-version', "#{RUBY_VERSION}\n"
 insert_lines_into_file 'Gemfile', "ruby '#{RUBY_VERSION}'", after: /^source /
 
-say 'Removing sdoc Bundler group'
+say_wizard 'Removing sdoc Bundler group'
 gsub_file 'Gemfile', /group :doc do/, ''
 gsub_file 'Gemfile', /\s*gem 'sdoc', require: false\nend/, ''
 
@@ -459,14 +459,14 @@ end
 commit_changes "Add basic ruby/rails config"
 
 stage_two do
-  say 'Removing sqlite3 gem'
+  say_wizard 'Removing sqlite3 gem'
   gsub_file 'Gemfile', /^.*sqlite3.*$/, ''
 
-  say 'Adding lib/autoloaded to autoload_paths'
+  say_wizard 'Adding lib/autoloaded to autoload_paths'
   preserve_directory 'lib/autoloaded'
   environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"
 
-  say 'setting default time zone to Central Time'
+  say_wizard 'setting default time zone to Central Time'
   environment "config.time_zone = 'Central Time (US & Canada)'"
 
   run_command 'bundle binstubs spring'
@@ -477,11 +477,11 @@ end
 stage_three do
   run_command 'spring binstubs --all'
 
-  say 'Reorganizing Gemfile groups'
+  say_wizard 'Reorganizing Gemfile groups'
   run_command 'bundle binstubs bundler-reorganizer'
   run_command 'bundler-reorganizer Gemfile'
 
-  say 'Cleaning up lint issues'
+  say_wizard 'Cleaning up lint issues'
   run 'rubocop -a'
 
   commit_changes "cleanup project resources"
@@ -531,7 +531,7 @@ EOS
 stage_two do
   run_command 'bundle binstubs puma'
 
-  say 'Configuring URL route helpers'
+  say_wizard 'Configuring URL route helpers'
   environment additional_application_settings
 
   say_wizard "installing simple_form for use with Bootstrap"
@@ -611,11 +611,11 @@ get_file '.jshintrc'
 stage_two do
   generate 'jasmine_rails:install'
 
-  say 'Remove turbolinks'
+  say_wizard 'Remove turbolinks'
   gsub_file 'app/assets/javascripts/application.js', %r{^//= require turbolinks$.}m, ''
   gsub_file 'Gemfile', /^.*turbolinks.*$/, ''
 
-  say 'Disabling config.assets.debug in development environment'
+  say_wizard 'Disabling config.assets.debug in development environment'
   comment_lines 'config/environments/development.rb', /config.assets.debug = true/
 
   commit_changes 'add Javascript settings'
@@ -662,8 +662,8 @@ stage_two do
   run_command 'bundle binstubs brakeman'
   run_command 'bundle binstubs travis'
 
-  say 'Configuring Continuous Integration...'
-  say "Login as the Github deployer account **not** your personal account!"
+  say_wizard 'Configuring Continuous Integration...'
+  say_wizard "Login as the Github deployer account **not** your personal account!"
   run 'bin/travis logout --pro'
   run_command "bin/travis login --pro -u #{prefs[:github_deployer_account]}"
   run_command "bin/travis enable --pro -r #{github_slug}"
@@ -785,7 +785,7 @@ EOS
 stage_two do
   append_to_file '.travis.yml', heroku_travis_template
 
-  say 'Login with the Heroku deployer account **not** your personal account!'
+  say_wizard 'Login with the Heroku deployer account **not** your personal account!'
   run_command 'heroku auth:logout'
   run_command 'heroku auth:login'
   run_command 'bin/travis encrypt $(heroku auth:token) --add deploy.api_key'

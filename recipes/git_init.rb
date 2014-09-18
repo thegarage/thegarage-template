@@ -11,7 +11,7 @@ stage_two do
     say_wizard "Repository already exists:"
     say_wizard "#{git_uri}"
   else
-    say 'Creating private github repository'
+    say_wizard 'Creating private github repository'
     run_command "hub create #{github_slug} -p"
     run_command "hub push -u origin master"
   end

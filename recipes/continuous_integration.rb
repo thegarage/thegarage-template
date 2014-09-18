@@ -29,8 +29,8 @@ stage_two do
   run_command 'bundle binstubs brakeman'
   run_command 'bundle binstubs travis'
 
-  say 'Configuring Continuous Integration...'
-  say "Login as the Github deployer account **not** your personal account!"
+  say_wizard 'Configuring Continuous Integration...'
+  say_wizard "Login as the Github deployer account **not** your personal account!"
   run 'bin/travis logout --pro'
   run_command "bin/travis login --pro -u #{prefs[:github_deployer_account]}"
   run_command "bin/travis enable --pro -r #{github_slug}"

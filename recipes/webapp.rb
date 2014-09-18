@@ -32,7 +32,7 @@ EOS
 stage_two do
   run_command 'bundle binstubs puma'
 
-  say 'Configuring URL route helpers'
+  say_wizard 'Configuring URL route helpers'
   environment additional_application_settings
 
   say_wizard "installing simple_form for use with Bootstrap"
