@@ -94,7 +94,10 @@ end
 
 # heroku has 30 character limit for application names
 def heroku_appname(env)
-  [prefs[:github_organization], app_name.slice(0, 9), env].join('-')
+  max_env_length = 10
+  max_app_name_length = 30 - 2 - max_env_length - prefs[:heroku_app_prefix].length
+  truncated_app_name = app_name.slice(0, max_app_name_length)
+  [prefs[:heroku_app_prefix], truncated_app_name, env].join('-')
 end
 
 __END__

@@ -20,6 +20,7 @@ prefs:
   :remote_branch: travis-ssh-keys
   :github_organization: thegarage
   :github_deployer_account: thegarage-deployer
+  :heroku_app_prefix: tg
 
 # list of gems to install
 gems:
