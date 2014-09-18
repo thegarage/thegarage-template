@@ -632,7 +632,7 @@ say_recipe 'continuous_integration'
 # >-------------------- recipes/continuous_integration.rb --------------------start<
 
 # install latest version of travis gem
-`gem install travis`
+run_command 'gem install travis'
 latest_version = `travis -v`.chomp
 gem 'travis', ">= #{latest_version}", group: :toolbox
 

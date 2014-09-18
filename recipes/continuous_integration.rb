@@ -1,5 +1,5 @@
 # install latest version of travis gem
-`gem install travis`
+run_command 'gem install travis'
 latest_version = `travis -v`.chomp
 gem 'travis', ">= #{latest_version}", group: :toolbox
 
