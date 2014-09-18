@@ -669,10 +669,10 @@ stage_two do
   run_command "bin/travis login --pro -u #{prefs[:github_deployer_account]}"
   run_command "bin/travis enable --pro -r #{github_slug}"
   run_command "bin/travis sshkey --pro -g -r #{github_slug}"
-  run_command 'bin/travis logout --pro'
 end
 
 stage_three do
+  run 'bin/travis logout --pro'
   rake 'ci'
 end
 # >-------------------- recipes/continuous_integration.rb --------------------end<
