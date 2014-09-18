@@ -857,6 +857,7 @@ EOS
 if honeybadger_api_key
   gem 'honeybadger'
   get_file 'config/initializers/honeybadger.rb'
+  append_to_file '.env', honeybadger_env_template
 end
 
 
