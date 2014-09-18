@@ -31,11 +31,11 @@ stage_two do
 
   say 'Configuring Continuous Integration...'
   say "Login as the Github deployer account **not** your personal account!"
-  run_command 'bin/travis logout'
-  run_command "bin/travis login -u #{prefs[:github_deployer_account]} --pro"
-  run_command "bin/travis enable -r #{github_slug}"
-  run_command "bin/travis sshkey -g -r #{github_slug}"
-  run_command 'bin/travis logout'
+  run 'bin/travis logout --pro'
+  run_command "bin/travis login --pro -u #{prefs[:github_deployer_account]}"
+  run_command "bin/travis enable --pro -r #{github_slug}"
+  run_command "bin/travis sshkey --pro -g -r #{github_slug}"
+  run_command 'bin/travis logout --pro'
 
   commit_changes 'Add continuous integration dependencies'
 end

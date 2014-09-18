@@ -94,7 +94,7 @@ end
 def add_gem(*all) Gemfile.add(*all); end
 
 @recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
-@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"master", :github_organization=>"thegarage", :github_deployer_account=>"admin@thegarage.us"}
+@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"master", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer"}
 @gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
 @diagnostics_prefs = []
@@ -664,11 +664,11 @@ stage_two do
 
   say 'Configuring Continuous Integration...'
   say "Login as the Github deployer account **not** your personal account!"
-  run_command 'bin/travis logout'
-  run_command "bin/travis login -u #{prefs[:github_deployer_account]} --pro"
-  run_command "bin/travis enable -r #{github_slug}"
-  run_command "bin/travis sshkey -g -r #{github_slug}"
-  run_command 'bin/travis logout'
+  run 'bin/travis logout --pro'
+  run_command "bin/travis login --pro -u #{prefs[:github_deployer_account]}"
+  run_command "bin/travis enable --pro -r #{github_slug}"
+  run_command "bin/travis sshkey --pro -g -r #{github_slug}"
+  run_command 'bin/travis logout --pro'
 
   commit_changes 'Add continuous integration dependencies'
 end
