@@ -10,6 +10,7 @@ if new_relic_license_key
   gem 'newrelic_rpm'
   gem 'newrelic-rake'
   get_file 'config/newrelic.yml'
+  get_file 'config/initializers/gc.rb'
   append_to_file '.env', new_relic_env_template
 end
 
