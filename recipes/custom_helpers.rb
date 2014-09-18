@@ -92,8 +92,9 @@ def github_slug
   [prefs[:github_organization], app_name].join('/')
 end
 
+# heroku has 30 character limit for application names
 def heroku_appname(env)
-  [prefs[:github_organization], app_name, env].join('-')
+  [prefs[:github_organization], app_name.slice(0, 9), env].join('-')
 end
 
 __END__
