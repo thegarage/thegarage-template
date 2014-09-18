@@ -40,7 +40,8 @@ end
 # download remote file contents and process through ERB
 # return the processed string
 def download_resource(resource)
-  say "Downloading resource: #{resource}"
+  say_status :download, resource
+
   open(resource) do |input|
     contents = input.binmode.read
     template = ERB.new(contents)
