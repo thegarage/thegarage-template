@@ -661,6 +661,7 @@ stage_two do
   run_command 'bundle binstubs bundler-audit'
   run_command 'bundle binstubs brakeman'
   run_command 'bundle binstubs travis'
+  commit_changes 'Add continuous integration dependencies'
 
   say_wizard 'Configuring Continuous Integration...'
   say_wizard "Login as the Github deployer account **not** your personal account!"
@@ -669,8 +670,6 @@ stage_two do
   run_command "bin/travis enable --pro -r #{github_slug}"
   run_command "bin/travis sshkey --pro -g -r #{github_slug}"
   run_command 'bin/travis logout --pro'
-
-  commit_changes 'Add continuous integration dependencies'
 end
 
 stage_three do
