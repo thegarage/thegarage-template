@@ -45,10 +45,11 @@ Development
 ```bash
 # install necessary gems
 $ bundle
-```
 
-```bash
-# compile recipies into uber template
+# use guard to automatically generate template w/ any changes
+$ bin/guard
+
+# OR manually compile recipies into template
 $ bin/generate_template
 
 # generate local example rails app for testing
