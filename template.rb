@@ -852,7 +852,7 @@ new_relic_env_template = <<-EOS
 NEW_RELIC_LICENSE_KEY=#{new_relic_license_key}
 EOS
 
-if new_relic_license_key
+unless new_relic_license_key.empty?
   gem 'newrelic_rpm'
   gem 'newrelic-rake'
   get_file 'config/newrelic.yml'
@@ -867,12 +867,11 @@ honeybadger_env_template = <<-EOS
 HONEY_BADGER_API_KEY=#{honeybadger_api_key}
 EOS
 
-if honeybadger_api_key
+unless honeybadger_api_key.empty?
   gem 'honeybadger'
   get_file 'config/initializers/honeybadger.rb'
   append_to_file '.env', honeybadger_env_template
 end
-
 
 hipchat_api_key = ask_wizard('Hipchat Notification API Key')
 hipchat_room = ask_wizard('Hipchat Room')
@@ -883,7 +882,7 @@ notifications:
   hipchat: #{hipchat_api_key}@#{hipchat_room}
 EOS
 
-if hipchat_api_key
+unless hipchat_api_key.empty? || hipchat_room.empty?
   append_to_file '.travis.yml', hipchat_travis_template
 end
 
