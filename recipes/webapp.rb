@@ -63,7 +63,7 @@ stage_two do
   generate 'simple_form:install --bootstrap'
   generate 'layout:install bootstrap3 -f'
 
-  insert_lines_into_file('app/views/layouts/application.html.erb', '<%= render "layouts/analytics" %>', before: '</body>'
+  insert_lines_into_file('app/views/layouts/application.html.erb', '<%= render "layouts/analytics" %>', before: '</body>')
 
   commit_changes 'Add frontend resources/config'
 end
