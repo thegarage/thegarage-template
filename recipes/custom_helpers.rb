@@ -32,20 +32,22 @@ end
 
 # download partial file contents and process through ERB
 # return the processed string
-def get_file_partial(category, path)
+def get_file_partial(category, path, options={})
   resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', 'partials', category.to_s, path)
-  download_resource resource
+  download_resource(resource, options)
 end
 
 # download remote file contents and process through ERB
 # return the processed string
-def download_resource(resource)
+def download_resource(resource, options={})
   say_status :download, resource
 
   open(resource) do |input|
     contents = input.binmode.read
-    template = ERB.new(contents)
-    template.result(binding)
+    unless options[:eval] == false
+      template = ERB.new(contents)
+      template.result(binding)
+    end
   end
 end
 
