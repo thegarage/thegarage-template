@@ -23,7 +23,7 @@ EOS
 unless mixpanel_token.empty?
   append_to_file '.env', mixpanel_env_template
   get_file 'app/assets/javascripts/mixpanel-page-viewed.js'
-  append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'mixpanel.html')
+  append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'mixpanel.html', eval: false)
 end
 
 ga_property = ask_wizard('Google Analytics Property ID')
@@ -34,7 +34,7 @@ GA_PROPERTY_ID=#{ga_property}
 EOS
 unless ga_property.empty?
   append_to_file '.env', ga_env_template
-  append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'ga.html')
+  append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'ga.html', eval: false)
 end
 
 commit_changes "Add webapp config"
