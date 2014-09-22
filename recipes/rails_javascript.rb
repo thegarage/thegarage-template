@@ -2,6 +2,10 @@ gem 'jasmine-rails', group: [:development, :test]
 
 get_file '.jshintignore'
 get_file '.jshintrc'
+get_file 'spec/javascript/helpers/spec_helper.js'
+get_file 'spec/javascript/helpers/jasmine_rails_fixture_path.js'
+get_file 'spec/javascript/helpers/stubs/mixpanel.js'
+get_file 'spec/javascript/helpers/stubs/ga.js'
 
 stage_two do
   generate 'jasmine_rails:install'

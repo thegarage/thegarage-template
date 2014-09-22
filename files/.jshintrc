@@ -42,6 +42,8 @@
     "xdescribe": false,
     "loadFixtures": true,
     "FastClick": false,
-    "_kmq": false
+    "_kmq": false,
+    "mixpanel": false,
+    "ga": false,
   }
 }
