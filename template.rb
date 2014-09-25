@@ -534,11 +534,6 @@ unless mixpanel_token.empty?
   append_to_file '.env', mixpanel_env_template
   get_file 'app/assets/javascripts/mixpanel-page-viewed.js'
   append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'mixpanel.html', eval: false)
-
-  stage_two do
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Staging Token')} --app #{heroku_appname('staging')}"
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Production Token')} --app #{heroku_appname('production')}"
-  end
 end
 
 ga_property = ask_wizard('Google Analytics Property ID')
@@ -875,6 +870,7 @@ heroku_appname('production').tap do |app|
     run_command "heroku apps:create #{app}"
     run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
     run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
+    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Production Token')} --app #{app}"
   end
   stage_three do
     run_command "open http://#{app}.herokuapp.com"
@@ -888,6 +884,7 @@ heroku_appname('staging').tap do |app|
     run_command "heroku config:set RACK_ENV=staging --app #{app}"
     run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
     run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
+    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Staging Token')} --app #{app}"
   end
   stage_three do
     run_command "open http://#{app}.herokuapp.com"
