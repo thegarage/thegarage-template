@@ -19,6 +19,7 @@ gem 'pg'
 gem_group :toolbox do
   gem 'thegarage-gitx'
   gem 'bundler-reorganizer'
+  gem 'bundler-updater'
   gem 'foreman'
 end
 
@@ -41,6 +42,7 @@ stage_two do
 end
 
 stage_three do
+  run_command 'bundle binstubs bundler-updater'
   run_command 'bin/spring binstubs --all'
 
   say_wizard 'Reorganizing Gemfile groups'
