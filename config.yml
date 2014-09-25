@@ -17,7 +17,7 @@ recipes:
 # change the remote_branch to a feature branch during development
 prefs:
   :remote_host: https://raw.github.com/thegarage/thegarage-template
-  :remote_branch: master
+  :remote_branch: add-legal-pages
   :github_organization: thegarage
   :github_deployer_account: thegarage-deployer
   :heroku_app_prefix: tg
