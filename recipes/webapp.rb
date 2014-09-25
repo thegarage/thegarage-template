@@ -17,7 +17,7 @@ get_file 'app/views/pages/privacy.html.haml'
 get_file 'app/views/layouts/_footer.html.haml'
 get_file 'app/views/layouts/_analytics.html.erb'
 
-mixpanel_token = ask_wizard('Mixpanel Development Token')
+mixpanel_token = ask_wizard('Mixpanel Token (Development)')
 mixpanel_env_template = <<-EOS
 
 # Mixpanel dev account
