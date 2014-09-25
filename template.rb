@@ -341,10 +341,10 @@ def download_resource(resource, options={})
 
   open(resource) do |input|
     contents = input.binmode.read
-    unless options[:eval] == false
-      template = ERB.new(contents)
-      template.result(binding)
-    end
+    return contents if options[:eval] == false
+
+    template = ERB.new(contents)
+    template.result(binding)
   end
 end
 
