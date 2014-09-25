@@ -14,7 +14,7 @@ get_file 'config/initializers/high_voltage.rb'
 get_file 'app/views/pages/home.html.haml'
 get_file 'app/views/layouts/_analytics.html.erb'
 
-mixpanel_token = ask_wizard('Mixpanel Development Token')
+mixpanel_token = ask_wizard('Mixpanel Token (Development)')
 mixpanel_env_template = <<-EOS
 
 # Mixpanel dev account
@@ -25,10 +25,9 @@ unless mixpanel_token.empty?
   get_file 'app/assets/javascripts/mixpanel-page-viewed.js'
   append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'mixpanel.html', eval: false)
 
-
-  stage_two do
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Staging Token')} --app #{heroku_appname('staging')}"
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Production Token')} --app #{heroku_appname('production')}"
+  stage_three do
+    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Token (Staging)')} --app #{heroku_appname('staging')}"
+    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Token (Production)')} --app #{heroku_appname('production')}"
   end
 end
 
