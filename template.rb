@@ -94,7 +94,7 @@ end
 def add_gem(*all) Gemfile.add(*all); end
 
 @recipes = ["custom_helpers", "git_init", "base", "webapp", "landing_page", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
-@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"master", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer", :heroku_app_prefix=>"tg"}
+@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"landing-page", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer", :heroku_app_prefix=>"tg"}
 @gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
 @diagnostics_prefs = []
@@ -327,6 +327,15 @@ def get_file(path)
   replace_file path, download_resource(resource)
 end
 
+# Just like `get_file` except it doesn't run the file through ERB
+def get_binary_file(path)
+  remove_file path
+  resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', path)
+
+  contents = open(resource) { |input| input.binmode.read }
+  replace_file path, contents
+end
+
 # download partial file contents and process through ERB
 # return the processed string
 def get_file_partial(category, path, options={})
@@ -518,7 +527,7 @@ append_to_file '.env', get_file_partial(:webapp, '.env')
 get_file 'Procfile'
 get_file 'config/puma.rb'
 get_file 'config/initializers/high_voltage.rb'
-get_file 'app/views/pages/home.html.haml'
+#get_file 'app/views/pages/home.html.haml'
 get_file 'app/views/layouts/_analytics.html.erb'
 
 mixpanel_token = ask_wizard('Mixpanel Token (Development)')
@@ -573,7 +582,7 @@ stage_two do
 
   say_wizard "installing simple_form for use with Bootstrap"
   generate 'simple_form:install --bootstrap'
-  generate 'layout:install bootstrap3 -f'
+  # generate 'layout:install bootstrap3 -f'
 
   insert_lines_into_file('app/views/layouts/application.html.erb', '<%= render "layouts/analytics" %>', before: '</body>')
 
@@ -594,16 +603,20 @@ gem 'font-awesome-rails'
 gem 'prelaunch', git: 'https://github.com/thegarage/prelaunch.git'
 
 # Assets
-get_file 'app/assets/images/landing/blue-tile.jpg'
-get_file 'app/assets/images/landing/meadow.jpg'
+get_binary_file 'app/assets/images/landing/blue-tile.jpg'
+get_binary_file 'app/assets/images/landing/meadow.jpg'
+get_binary_file 'app/assets/stylesheets/application.css.scss'
+get_binary_file 'app/assets/stylesheets/framework_and_overrides.css.scss'
+get_binary_file 'app/assets/stylesheets/landing.css.scss'
+remove_file 'app/assets/stylesheets/application.css'
 
-get_file 'app/views/layouts/_footer.html.haml'
-get_file 'app/views/layouts/_messages.html.erb'
-get_file 'app/views/layouts/_navigation.html.erb'
-get_file 'app/views/layouts/_navigation_links.html.erb'
-get_file 'app/views/layouts/application.html.erb'
+get_binary_file 'app/views/layouts/_footer.html.haml'
+get_binary_file 'app/views/layouts/_messages.html.erb'
+get_binary_file 'app/views/layouts/_navigation.html.erb'
+get_binary_file 'app/views/layouts/_navigation_links.html.erb'
+get_binary_file 'app/views/layouts/application.html.erb'
 
-get_file 'app/views/pages/home.html.haml'
+get_binary_file 'app/views/pages/home.html.haml'
 
 stage_two do
   generate 'prelaunch:install'

@@ -11,7 +11,7 @@ append_to_file '.env', get_file_partial(:webapp, '.env')
 get_file 'Procfile'
 get_file 'config/puma.rb'
 get_file 'config/initializers/high_voltage.rb'
-get_file 'app/views/pages/home.html.haml'
+#get_file 'app/views/pages/home.html.haml'
 get_file 'app/views/layouts/_analytics.html.erb'
 
 mixpanel_token = ask_wizard('Mixpanel Token (Development)')
@@ -66,7 +66,7 @@ stage_two do
 
   say_wizard "installing simple_form for use with Bootstrap"
   generate 'simple_form:install --bootstrap'
-  generate 'layout:install bootstrap3 -f'
+  # generate 'layout:install bootstrap3 -f'
 
   insert_lines_into_file('app/views/layouts/application.html.erb', '<%= render "layouts/analytics" %>', before: '</body>')
 

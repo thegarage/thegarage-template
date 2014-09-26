@@ -1,1 +1,31 @@
-%h1= "Welcome to #{Rails.application.class.name}"
+.section#hero
+  .container
+    .row
+      .col-sm-8.col-sm-offset-2
+        %h1 Startup Idea
+        %h2 Curabitur blandit tempus porttitor. Cum sociis natoque penatibus et magnis dis parturient montes.
+
+        .row#signup
+          .col-sm-10.col-sm-offset-1
+            %form.form-horizontal{:role => "form"}
+              .form-group
+                %input#exampleInputEmail1.form-control{:placeholder => "Enter your email", :type => "email"}/
+                %a.btn.btn-default{:type => "submit"} Join waiting list
+
+.section#benefits
+  .container
+    .row
+      .col-sm-4.benefit
+        = fa_icon "camera-retro"
+        %h3 Feature 1
+        Cras mattis consectetur purus sit amet fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+      .col-sm-4.benefit
+        = fa_icon "tree"
+        %h3 Feature 2
+        Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor.
+
+      .col-sm-4.benefit
+        = fa_icon "paper-plane"
+        %h3 Feature 3
+        Nullam id dolor id nibh ultricies vehicula ut id elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
