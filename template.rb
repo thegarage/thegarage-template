@@ -93,7 +93,7 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
+@recipes = ["custom_helpers", "git_init", "base", "webapp", "landing_page", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
 @prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"master", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer", :heroku_app_prefix=>"tg"}
 @gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
@@ -580,6 +580,36 @@ stage_two do
   commit_changes 'Add frontend resources/config'
 end
 # >---------------------------- recipes/webapp.rb ----------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >-----------------------------[ landing_page ]------------------------------<
+@current_recipe = "landing_page"
+@before_configs["landing_page"].call if @before_configs["landing_page"]
+say_recipe 'landing_page'
+@configs[@current_recipe] = config
+# >------------------------- recipes/landing_page.rb -------------------------start<
+
+gem 'font-awesome-rails'
+gem 'prelaunch', git: 'https://github.com/thegarage/prelaunch.git'
+
+# Assets
+get_file 'app/assets/images/landing/blue-tile.jpg'
+get_file 'app/assets/images/landing/meadow.jpg'
+
+get_file 'app/views/layouts/_footer.html.haml'
+get_file 'app/views/layouts/_messages.html.erb'
+get_file 'app/views/layouts/_navigation.html.erb'
+get_file 'app/views/layouts/_navigation_links.html.erb'
+get_file 'app/views/layouts/application.html.erb'
+
+get_file 'app/views/pages/home.html.haml'
+
+stage_two do
+  generate 'prelaunch:install'
+  commit_changes 'Added a starter landing page.'
+end
+# >------------------------- recipes/landing_page.rb -------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<

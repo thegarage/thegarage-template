@@ -1,0 +1,159 @@
+body {
+  background: #f9f9f9;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5 {
+  margin: 0;
+  padding: 0;
+  font-family: 'Merriweather', serif;
+  font-weight: bold;
+}
+
+.section {
+  padding: 60px 0;
+}
+
+#hero {
+  position: relative;
+  z-index: 1;
+  background-color: #216888;
+  background:
+    url(/assets/landing/meadow.jpg) no-repeat top center fixed,
+    url(/assets/landing/blue-tile.jpg) repeat;
+  color: #fff;
+  text-align: center;
+  padding: 40px 0;
+
+  h1 {
+    font-size: 34px;
+    margin: 0 0 15px;
+  }
+
+  h2 {
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: normal;
+    opacity: .7;
+  }
+}
+
+#signup {
+  margin-top: 40px;
+
+  .form-control {
+    font-size: 24px;
+    padding: 30px 20px;
+    border-radius: 5px;
+    display: inline-block;
+    width: 60%;
+
+    &::-webkit-input-placeholder {
+      color: #aaa;
+    }
+
+    &:-moz-placeholder { /* Firefox 18- */
+      color: #aaa;
+    }
+
+    &::-moz-placeholder {  /* Firefox 19+ */
+      color: #aaa;
+    }
+
+    &:-ms-input-placeholder {
+      color: #aaa;
+    }
+  }
+
+  .btn {
+    transition: all 0.5s ease;
+    color: #fff;
+    font-size: 24px;
+    border: 2px solid #fff;
+    background: none;
+    padding: 12px 20px 13px;
+    margin-top: 10px;
+
+    &:hover {
+      transition: all 0.5s ease;
+      background: #40cd6e;
+      border: 2px solid #40cd6e;
+    }
+  }
+}
+
+#benefits {
+  background: #fff;
+  color: #999;
+  text-align: center;
+
+  .benefit {
+    padding: 0 40px;
+    margin-bottom: 40px;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  .fa {
+    color: #444;
+    font-size: 44px;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    color: #444;
+    margin-bottom: 15px;
+  }
+}
+
+footer {
+  background: #f9f9f9;
+  color: #aaa;
+  text-align: center;
+
+  &.section {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+/* Extra small devices (phones, less than 768px) */
+/* No media query since this is the default in Bootstrap */
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: $screen-sm-min) {
+  #hero {
+    padding: 140px 0;
+
+    h1 {
+      font-size: 60px;
+    }
+
+    h2 {
+      font-size: 28px;
+    }
+  }
+
+  .section {
+    padding: 100px 0;
+  }
+
+  #benefits {
+    .fa {
+      font-size: 64px;
+    }
+  }
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: $screen-md-min) {  }
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: $screen-lg-min) {
+  #signup .btn {
+    margin: -9px 0 0 5px;
+  }
+}

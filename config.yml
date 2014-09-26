@@ -4,6 +4,7 @@ recipes:
 - git_init
 - base
 - webapp
+- landing_page
 - testsuite
 - rails_javascript
 - continuous_integration
