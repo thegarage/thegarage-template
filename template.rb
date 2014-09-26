@@ -519,6 +519,9 @@ get_file 'Procfile'
 get_file 'config/puma.rb'
 get_file 'config/initializers/high_voltage.rb'
 get_file 'app/views/pages/home.html.haml'
+get_file 'app/views/pages/terms.html.haml'
+get_file 'app/views/pages/privacy.html.haml'
+get_file 'app/views/layouts/_footer.html.haml'
 get_file 'app/views/layouts/_analytics.html.erb'
 
 mixpanel_token = ask_wizard('Mixpanel Token (Development)')
@@ -531,11 +534,6 @@ unless mixpanel_token.empty?
   append_to_file '.env', mixpanel_env_template
   get_file 'app/assets/javascripts/mixpanel-page-viewed.js'
   append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'mixpanel.html', eval: false)
-
-  stage_three do
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Token (Staging)')} --app #{heroku_appname('staging')}"
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Token (Production)')} --app #{heroku_appname('production')}"
-  end
 end
 
 ga_property = ask_wizard('Google Analytics Property ID')
@@ -551,7 +549,7 @@ end
 
 commit_changes "Add webapp config"
 
-additional_application_settings = <<-EOS
+url_env_settings = <<-EOS
 # configure asset hosts for controllers + mailers
     # configure url helpers to use the options from env
     default_url_options = {
@@ -565,16 +563,38 @@ additional_application_settings = <<-EOS
     config.force_ssl = (ENV['DEFAULT_URL_PROTOCOL'] == 'https')
 EOS
 
+
+email_env_settings = %q(
+# Configure default email settings
+    config.action_mailer.default_options = {
+      from: %Q("#{ENV['COMPANY_NAME']}" <contact@#{ENV['COMPANY_DOMAIN']}>)
+    }
+)
+
+company_name = ask_wizard('What is the Company Name?')
+company_domain = ask_wizard('What is production domain?')
+
+company_info_env_template = <<-EOS
+
+# Company settings
+COMPANY_NAME=#{company_name}
+COMPANY_DOMAIN=#{company_domain}
+
+EOS
+append_to_file '.env', company_info_env_template
+
 stage_two do
   run_command 'bundle binstubs puma'
 
-  say_wizard 'Configuring URL route helpers'
-  environment additional_application_settings
+  say_wizard 'Configuring application settings'
+  environment url_env_settings
+  environment email_env_settings
 
   say_wizard "installing simple_form for use with Bootstrap"
   generate 'simple_form:install --bootstrap'
   generate 'layout:install bootstrap3 -f'
 
+  insert_lines_into_file('app/views/layouts/application.html.erb', '<%= render "layouts/footer" %>', before: '</body>')
   insert_lines_into_file('app/views/layouts/application.html.erb', '<%= render "layouts/analytics" %>', before: '</body>')
 
   commit_changes 'Add frontend resources/config'
@@ -850,6 +870,7 @@ heroku_appname('production').tap do |app|
     run_command "heroku apps:create #{app}"
     run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
     run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
+    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Production Token')} --app #{app}"
   end
   stage_three do
     run_command "open http://#{app}.herokuapp.com"
@@ -863,6 +884,7 @@ heroku_appname('staging').tap do |app|
     run_command "heroku config:set RACK_ENV=staging --app #{app}"
     run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
     run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
+    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Staging Token')} --app #{app}"
   end
   stage_three do
     run_command "open http://#{app}.herokuapp.com"

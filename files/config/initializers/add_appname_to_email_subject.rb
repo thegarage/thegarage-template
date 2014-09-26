@@ -8,7 +8,7 @@
 class AddAppnameToEmailSubject
   def self.delivering_email(mail)
     prefixes = []
-    prefixes << Rails.application.class.parent_name
+    prefixes << ENV['COMPANY_NAME']
     prefixes << Rails.env.upcase unless Rails.env.production?
     prefix = "[#{prefixes.join(' ')}] "
     mail.subject.prepend(prefix)
