@@ -7,10 +7,10 @@
 
         .row#signup
           .col-sm-10.col-sm-offset-1
-            %form.form-horizontal{:role => "form"}
+            = form_for([prelaunch, Prelaunch::Subscriber.new]) do |f|
               .form-group
-                %input#exampleInputEmail1.form-control{:placeholder => "Enter your email", :type => "email"}/
-                %a.btn.btn-default{:type => "submit"} Join waiting list
+                = f.email_field :email, class: 'form-control'
+                = f.submit "Join waiting list", class: "btn btn-default"
 
 .section#benefits
   .container

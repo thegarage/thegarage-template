@@ -24,10 +24,10 @@ end
 # download remote file from remote repo and save to local path
 # the downloaded resources *may* contain dynamic ERB statements
 # that will be automatically evaluated once downloaded
-def get_file(path)
+def get_file(path, options={})
   remove_file path
   resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', path)
-  replace_file path, download_resource(resource)
+  replace_file path, download_resource(resource, options)
 end
 
 # Just like `get_file` except it doesn't run the file through ERB

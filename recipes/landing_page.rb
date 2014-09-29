@@ -1,24 +1,25 @@
 gem 'font-awesome-rails'
-gem 'prelaunch', git: 'https://github.com/thegarage/prelaunch.git'
+gem 'prelaunch', git: 'https://github.com/thegarage/waitlist.git'
 
 # Assets
-get_binary_file 'app/assets/images/landing/blue-tile.jpg'
-get_binary_file 'app/assets/images/landing/meadow.jpg'
-get_binary_file 'app/assets/stylesheets/application.css.scss'
-get_binary_file 'app/assets/stylesheets/framework_and_overrides.css.scss'
-get_binary_file 'app/assets/stylesheets/landing.css.scss'
+get_file 'app/assets/images/landing/blue-tile.jpg', eval: false
+get_file 'app/assets/images/landing/meadow.jpg', eval: false
+get_file 'app/assets/stylesheets/application.css.scss', eval: false
+get_file 'app/assets/stylesheets/framework_and_overrides.css.scss', eval: false
+get_file 'app/assets/stylesheets/landing.css.scss', eval: false
 remove_file 'app/assets/stylesheets/application.css'
 
-get_binary_file 'app/views/layouts/_footer.html.haml'
-get_binary_file 'app/views/layouts/_messages.html.erb'
-get_binary_file 'app/views/layouts/_navigation.html.erb'
-get_binary_file 'app/views/layouts/_navigation_links.html.erb'
-get_binary_file 'app/views/layouts/application.html.erb'
+get_file 'app/views/layouts/_footer.html.haml', eval: false
+get_file 'app/views/layouts/_messages.html.erb', eval: false
+get_file 'app/views/layouts/_navigation.html.erb', eval: false
+get_file 'app/views/layouts/_navigation_links.html.erb', eval: false
+get_file 'app/views/layouts/application.html.erb', eval: false
 
-get_binary_file 'app/views/pages/home.html.haml'
+get_file 'app/views/pages/home.html.haml', eval: false
+commit_changes 'Added Landing page assets.'
 
 stage_two do
-  generate 'prelaunch:install'
+  generate 'waitlist:install'
   commit_changes 'Added a starter landing page.'
 end
 

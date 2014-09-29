@@ -40,14 +40,19 @@ h1, h2, h3, h4, h5 {
 }
 
 #signup {
+  input {
+    color: #333;
+  }
   margin-top: 40px;
 
   .form-control {
     font-size: 24px;
-    padding: 30px 20px;
+    height: 2.5em;
     border-radius: 5px;
     display: inline-block;
     width: 60%;
+
+    color: #333;
 
     &::-webkit-input-placeholder {
       color: #aaa;
