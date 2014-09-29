@@ -573,7 +573,7 @@ email_env_settings = %q(
 )
 
 company_name = ask_wizard('What is the Company Name?')
-company_domain = ask_wizard('What is production domain?')
+company_domain = ask_wizard('What is the site domain? (ex: google.com)')
 
 company_info_env_template = <<-EOS
 
