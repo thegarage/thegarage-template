@@ -621,9 +621,6 @@ stage_two do
   say_wizard "Setting up waitlist gem"
   generate 'waitlist:install'
 
-  insert_lines_into_file('app/views/layouts/application.html.erb', '<%= render "layouts/footer" %>', before: '</body>')
-  insert_lines_into_file('app/views/layouts/application.html.erb', '<%= render "layouts/analytics" %>', before: '</body>')
-
   commit_changes 'Add frontend resources/config'
 end
 # >---------------------------- recipes/webapp.rb ----------------------------end<
