@@ -93,8 +93,8 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["custom_helpers", "git_init", "base", "webapp", "landing_page", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
-@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"landing-page", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer", :heroku_app_prefix=>"tg"}
+@recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
+@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"master", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer", :heroku_app_prefix=>"tg"}
 @gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
 @diagnostics_prefs = []
@@ -521,14 +521,30 @@ gem 'bootstrap-sass'
 gem 'simple_form'
 gem 'rails_layout'
 gem 'high_voltage'
+gem 'font-awesome-rails'
+gem 'waitlist'
 
 append_to_file '.env', get_file_partial(:webapp, '.env')
 
 get_file 'Procfile'
 get_file 'config/puma.rb'
 get_file 'config/initializers/high_voltage.rb'
-#get_file 'app/views/pages/home.html.haml'
+
+get_file 'app/assets/images/landing/blue-tile.jpg', eval: false
+get_file 'app/assets/images/landing/meadow.jpg', eval: false
+get_file 'app/assets/stylesheets/application.css.scss', eval: false
+get_file 'app/assets/stylesheets/framework_and_overrides.css.scss', eval: false
+get_file 'app/assets/stylesheets/landing.css.scss', eval: false
+remove_file 'app/assets/stylesheets/application.css'
+
 get_file 'app/views/layouts/_analytics.html.erb'
+get_file 'app/views/layouts/_footer.html.haml', eval: false
+get_file 'app/views/layouts/_messages.html.erb', eval: false
+get_file 'app/views/layouts/_navigation.html.erb', eval: false
+get_file 'app/views/layouts/_navigation_links.html.erb', eval: false
+get_file 'app/views/layouts/application.html.erb', eval: false
+
+get_file 'app/views/pages/home.html.haml', eval: false
 
 mixpanel_token = ask_wizard('Mixpanel Token (Development)')
 mixpanel_env_template = <<-EOS
@@ -582,48 +598,15 @@ stage_two do
 
   say_wizard "installing simple_form for use with Bootstrap"
   generate 'simple_form:install --bootstrap'
-  # generate 'layout:install bootstrap3 -f'
+
+  say_wizard "Setting up waitlist gem"
+  generate 'waitlist:install'
 
   insert_lines_into_file('app/views/layouts/application.html.erb', '<%= render "layouts/analytics" %>', before: '</body>')
 
   commit_changes 'Add frontend resources/config'
 end
 # >---------------------------- recipes/webapp.rb ----------------------------end<
-# >-------------------------- templates/recipe.erb ---------------------------end<
-
-# >-------------------------- templates/recipe.erb ---------------------------start<
-# >-----------------------------[ landing_page ]------------------------------<
-@current_recipe = "landing_page"
-@before_configs["landing_page"].call if @before_configs["landing_page"]
-say_recipe 'landing_page'
-@configs[@current_recipe] = config
-# >------------------------- recipes/landing_page.rb -------------------------start<
-
-gem 'font-awesome-rails'
-gem 'prelaunch', git: 'https://github.com/thegarage/waitlist.git'
-
-# Assets
-get_file 'app/assets/images/landing/blue-tile.jpg', eval: false
-get_file 'app/assets/images/landing/meadow.jpg', eval: false
-get_file 'app/assets/stylesheets/application.css.scss', eval: false
-get_file 'app/assets/stylesheets/framework_and_overrides.css.scss', eval: false
-get_file 'app/assets/stylesheets/landing.css.scss', eval: false
-remove_file 'app/assets/stylesheets/application.css'
-
-get_file 'app/views/layouts/_footer.html.haml', eval: false
-get_file 'app/views/layouts/_messages.html.erb', eval: false
-get_file 'app/views/layouts/_navigation.html.erb', eval: false
-get_file 'app/views/layouts/_navigation_links.html.erb', eval: false
-get_file 'app/views/layouts/application.html.erb', eval: false
-
-get_file 'app/views/pages/home.html.haml', eval: false
-commit_changes 'Added Landing page assets.'
-
-stage_two do
-  generate 'waitlist:install'
-  commit_changes 'Added a starter landing page.'
-end
-# >------------------------- recipes/landing_page.rb -------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
