@@ -443,9 +443,10 @@ get_file 'CONTRIBUTING.md'
 get_file 'README.md'
 create_file '.env', ''
 
-say_wizard "Configuring app to use ruby #{RUBY_VERSION}"
-create_file '.ruby-version', "#{RUBY_VERSION}\n"
-insert_lines_into_file 'Gemfile', "ruby '#{RUBY_VERSION}'", after: /^source /
+ruby_version = '2.1.3'
+say_wizard "Configuring app to use ruby #{ruby_version}"
+create_file '.ruby-version', "#{ruby_version}\n"
+insert_lines_into_file 'Gemfile', "ruby '#{ruby_version}'", after: /^source /
 
 say_wizard 'Removing sdoc Bundler group'
 gsub_file 'Gemfile', /group :doc do/, ''
