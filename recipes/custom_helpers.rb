@@ -30,15 +30,6 @@ def get_file(path, options={})
   replace_file path, download_resource(resource, options)
 end
 
-# Just like `get_file` except it doesn't run the file through ERB
-def get_binary_file(path)
-  remove_file path
-  resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', path)
-
-  contents = open(resource) { |input| input.binmode.read }
-  replace_file path, contents
-end
-
 # download partial file contents and process through ERB
 # return the processed string
 def get_file_partial(category, path, options={})

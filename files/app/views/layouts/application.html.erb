@@ -5,7 +5,7 @@
     <title><%= content_for?(:title) ? yield(:title) : "Garagetemplate" %></title>
     <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "Garagetemplate" %>">
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
-    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true, href: 'http://fonts.googleapis.com/css?family=Merriweather:400,700,300' %>
+    <%= stylesheet_link_tag 'http://fonts.googleapis.com/css?family=Merriweather:400,700,300', media: 'all', 'data-turbolinks-track' => true %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
     <%= csrf_meta_tags %>
   </head>

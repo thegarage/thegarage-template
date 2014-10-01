@@ -327,15 +327,6 @@ def get_file(path, options={})
   replace_file path, download_resource(resource, options)
 end
 
-# Just like `get_file` except it doesn't run the file through ERB
-def get_binary_file(path)
-  remove_file path
-  resource = File.join(prefs[:remote_host], prefs[:remote_branch], 'files', path)
-
-  contents = open(resource) { |input| input.binmode.read }
-  replace_file path, contents
-end
-
 # download partial file contents and process through ERB
 # return the processed string
 def get_file_partial(category, path, options={})
@@ -534,8 +525,10 @@ get_file 'config/initializers/high_voltage.rb'
 get_file 'app/assets/images/landing/blue-tile.jpg', eval: false
 get_file 'app/assets/images/landing/meadow.jpg', eval: false
 get_file 'app/assets/stylesheets/application.css.scss', eval: false
-get_file 'app/assets/stylesheets/framework_and_overrides.css.scss', eval: false
-get_file 'app/assets/stylesheets/landing.css.scss', eval: false
+get_file 'app/assets/stylesheets/_framework_and_overrides.scss', eval: false
+get_file 'app/assets/stylesheets/utilities/_mixins.css.scss', eval: false
+get_file 'app/assets/stylesheets/styles/landing.css.scss', eval: false
+
 remove_file 'app/assets/stylesheets/application.css'
 
 get_file 'app/views/layouts/_analytics.html.erb'

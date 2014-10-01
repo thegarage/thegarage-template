@@ -17,8 +17,10 @@ get_file 'config/initializers/high_voltage.rb'
 get_file 'app/assets/images/landing/blue-tile.jpg', eval: false
 get_file 'app/assets/images/landing/meadow.jpg', eval: false
 get_file 'app/assets/stylesheets/application.css.scss', eval: false
-get_file 'app/assets/stylesheets/framework_and_overrides.css.scss', eval: false
-get_file 'app/assets/stylesheets/landing.css.scss', eval: false
+get_file 'app/assets/stylesheets/_framework_and_overrides.scss', eval: false
+get_file 'app/assets/stylesheets/utilities/_mixins.css.scss', eval: false
+get_file 'app/assets/stylesheets/styles/landing.css.scss', eval: false
+
 remove_file 'app/assets/stylesheets/application.css'
 
 get_file 'app/views/layouts/_analytics.html.erb'
