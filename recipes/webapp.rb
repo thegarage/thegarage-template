@@ -3,7 +3,6 @@ gem 'haml'
 gem 'html2haml', group: :toolbox
 gem 'bootstrap-sass'
 gem 'simple_form'
-gem 'rails_layout'
 gem 'high_voltage'
 gem 'font-awesome-rails'
 gem 'waitlist'
