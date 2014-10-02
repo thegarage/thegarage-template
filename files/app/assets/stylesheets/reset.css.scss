@@ -1,0 +1,17 @@
+body {
+  background: #f9f9f9;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5 {
+  margin: 0;
+  padding: 0;
+  font-family: 'Merriweather', serif;
+  font-weight: bold;
+}
+
+.section {
+  padding: 60px 0;
+  @include respond-to(sm) { padding: 100px 0; }
+}

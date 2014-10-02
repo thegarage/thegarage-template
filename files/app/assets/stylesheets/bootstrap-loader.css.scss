@@ -1,0 +1,5 @@
+// define bootstrap override variables here before importing library
+// see http://getbootstrap.com/customize/#less-variables
+// ex: $navbar-default-bg: #312312;
+@import "bootstrap-sprockets";
+@import "bootstrap";

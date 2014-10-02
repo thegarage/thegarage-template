@@ -1,0 +1,16 @@
+// bootstrap-sass variables must be defined beforehand
+@mixin respond-only-to($media) {
+  @if $media == xs {
+    @media only screen and (max-width: $screen-xs-max) { @content; }
+  }
+  @else if $media == sm {
+    @media only screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { @content; }
+  }
+  @else if $media == md {
+    @media only screen and (min-width: $screen-md-min) and (max-width: $screen-md-max) { @content; }
+    @media only screen and (min-width: $break-small + 1) and (max-width: $break-large - 1) { @content; }
+  }
+  @else if $media == lg {
+    @media only screen and (min-width: $screen-lg-min) and (max-width: $screen-lg-max) { @content; }
+  }
+}
