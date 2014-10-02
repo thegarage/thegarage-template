@@ -1,0 +1,8 @@
+
+deploy:
+  provider: heroku
+  strategy: git
+  run: rake db:migrate
+  app:
+    master: <%= heroku_appname('production') %>
+    staging: <%= heroku_appname('staging') %>

@@ -398,6 +398,11 @@ def heroku_appname(env)
   truncated_app_name = app_name.slice(0, max_app_name_length)
   [prefs[:heroku_app_prefix], truncated_app_name, env].join('-')
 end
+
+# check if non-empty value exists for preference
+def has_pref?(preference)
+  !prefs[preference].to_s.empty?
+end
 # >------------------------ recipes/custom_helpers.rb ------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
@@ -547,71 +552,31 @@ get_file 'app/views/pages/home.html.haml', eval: false
 get_file 'app/views/pages/terms.html.haml'
 get_file 'app/views/pages/privacy.html.haml'
 
-mixpanel_token = ask_wizard('Mixpanel Token (Development)')
-mixpanel_env_template = <<-EOS
-
-# Mixpanel dev account
-MIXPANEL_TOKEN=#{mixpanel_token}
-EOS
-unless mixpanel_token.empty?
-  append_to_file '.env', mixpanel_env_template
+prefs[:mixpanel_token_dev] = ask_wizard('Mixpanel Token (Development)')
+if has_pref?(:mixpanel_token_dev)
+  append_to_file '.env', get_file_partial(:mixpanel, '.env')
   get_file 'app/assets/javascripts/mixpanel-page-viewed.js'
   append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'mixpanel.html', eval: false)
 end
 
-ga_property = ask_wizard('Google Analytics Property ID')
-ga_env_template = <<-EOS
-
-# Google Analytics Config
-GA_PROPERTY_ID=#{ga_property}
-EOS
-unless ga_property.empty?
-  append_to_file '.env', ga_env_template
+prefs[:ga_property] = ask_wizard('Google Analytics Property ID')
+if has_pref?(:ga_property)
+  append_to_file '.env', get_file_partial(:google_analytics, '.env')
   append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'ga.html', eval: false)
 end
 
+prefs[:company_name] = ask_wizard('What is the Company Name?')
+prefs[:company_domain] = ask_wizard('What is the site domain? (ex: google.com)')
+append_to_file '.env', get_file_partial(:project, '.env'
+
 commit_changes "Add webapp config"
-
-url_env_settings = <<-EOS
-# configure asset hosts for controllers + mailers
-    # configure url helpers to use the options from env
-    default_url_options = {
-      host: ENV['DEFAULT_URL_HOST'],
-      protocol: ENV['DEFAULT_URL_PROTOCOL']
-    }
-    Rails.application.routes.default_url_options = default_url_options
-    config.action_mailer.default_url_options = default_url_options
-
-    # use SSL, use Strict-Transport-Security, and use secure cookies
-    config.force_ssl = (ENV['DEFAULT_URL_PROTOCOL'] == 'https')
-EOS
-
-
-email_env_settings = %q(
-# Configure default email settings
-    config.action_mailer.default_options = {
-      from: %Q("#{ENV['COMPANY_NAME']}" <contact@#{ENV['COMPANY_DOMAIN']}>)
-    }
-)
-
-company_name = ask_wizard('What is the Company Name?')
-company_domain = ask_wizard('What is the site domain? (ex: google.com)')
-
-company_info_env_template = <<-EOS
-
-# Company settings
-COMPANY_NAME=#{company_name}
-COMPANY_DOMAIN=#{company_domain}
-
-EOS
-append_to_file '.env', company_info_env_template
 
 stage_two do
   run_command 'bundle binstubs puma'
 
   say_wizard 'Configuring application settings'
-  environment url_env_settings
-  environment email_env_settings
+  environment get_file_partial(:webapp, 'application.rb', eval: false)
+  environment get_file_partial(:email, 'application.rb', eval: false)
 
   say_wizard "installing simple_form for use with Bootstrap"
   generate 'simple_form:install --bootstrap'
@@ -850,30 +815,11 @@ say_recipe 'hosting'
 gem 'rails_12factor', group: [:production, :staging]
 
 get_file 'config/environments/staging.rb'
-replace_file 'config/secrets.yml', <<-EOS
-<%= Rails.env %>:
-  secret_key_base: <%= ENV["SECRET_KEY_BASE"] %>
-
-EOS
-append_to_file '.env', <<-EOS
-# secret key used by rails for generating session cookies
-SECRET_KEY_BASE=#{SecureRandom.hex(64)}
-
-EOS
-
-heroku_travis_template = <<-EOS
-
-deploy:
-  provider: heroku
-  strategy: git
-  run: rake db:migrate
-  app:
-    master: #{heroku_appname('production')}
-    staging: #{heroku_appname('staging')}
-EOS
+get_file 'config/secrets.yml', eval: false
+append_to_file '.env', get_file_partial(:heroku, '.env')
 
 stage_two do
-  append_to_file '.travis.yml', heroku_travis_template
+  append_to_file '.travis.yml', get_file_partial(:heroku, '.travis.yml')
 
   say_wizard 'Login with the Heroku deployer account **not** your personal account!'
   run_command 'heroku auth:logout'
@@ -927,46 +873,26 @@ say_recipe 'integrations'
 @configs[@current_recipe] = config
 # >------------------------- recipes/integrations.rb -------------------------start<
 
-new_relic_license_key = ask_wizard('New Relic License Key (sandbox)')
-new_relic_env_template = <<-EOS
-
-# newrelic license key
-# https://docs.newrelic.com/docs/ruby/ruby-agent-configuration
-NEW_RELIC_LICENSE_KEY=#{new_relic_license_key}
-EOS
-
-unless new_relic_license_key.empty?
+prefs[:new_relic_license_key] = ask_wizard('New Relic License Key (sandbox)')
+if has_pref?(:new_relic_license_key)
   gem 'newrelic_rpm'
   gem 'newrelic-rake'
   get_file 'config/newrelic.yml'
   get_file 'config/initializers/gc.rb'
-  append_to_file '.env', new_relic_env_template
+  append_to_file '.env', get_file_partial(:newrelic, '.env')
 end
 
-honeybadger_api_key = ask_wizard('Honeybadger Project API Key')
-honeybadger_env_template = <<-EOS
-
-# honey badger account info
-HONEY_BADGER_API_KEY=#{honeybadger_api_key}
-EOS
-
-unless honeybadger_api_key.empty?
+prefs[:honeybadger_api_key] = ask_wizard('Honeybadger Project API Key')
+if has_pref?(:honeybadger_api_key)
   gem 'honeybadger'
   get_file 'config/initializers/honeybadger.rb'
-  append_to_file '.env', honeybadger_env_template
+  append_to_file '.env', get_file_partial(:honeybadger, '.env')
 end
 
-hipchat_api_key = ask_wizard('Hipchat Notification API Key')
-hipchat_room = ask_wizard('Hipchat Room')
-hipchat_travis_template = <<-EOS
-
-# see http://docs.travis-ci.com/user/notifications/#HipChat-notification
-notifications:
-  hipchat: #{hipchat_api_key}@#{hipchat_room}
-EOS
-
-unless hipchat_api_key.empty? || hipchat_room.empty?
-  append_to_file '.travis.yml', hipchat_travis_template
+prefs[:hipchat_api_key] = ask_wizard('Hipchat Notification API Key')
+prefs[:hipchat_room] = ask_wizard('Hipchat Room')
+if has_pref?(:hipchat_api_key) && has_pref?(:hipchat_room)
+  append_to_file '.travis.yml', get_file_partial(:hipchat, '.travis.yml')
 end
 
 commit_changes 'Add 3rd party integrations'

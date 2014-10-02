@@ -1,30 +1,11 @@
 gem 'rails_12factor', group: [:production, :staging]
 
 get_file 'config/environments/staging.rb'
-replace_file 'config/secrets.yml', <<-EOS
-<%= Rails.env %>:
-  secret_key_base: <%= ENV["SECRET_KEY_BASE"] %>
-
-EOS
-append_to_file '.env', <<-EOS
-# secret key used by rails for generating session cookies
-SECRET_KEY_BASE=#{SecureRandom.hex(64)}
-
-EOS
-
-heroku_travis_template = <<-EOS
-
-deploy:
-  provider: heroku
-  strategy: git
-  run: rake db:migrate
-  app:
-    master: #{heroku_appname('production')}
-    staging: #{heroku_appname('staging')}
-EOS
+get_file 'config/secrets.yml', eval: false
+append_to_file '.env', get_file_partial(:heroku, '.env')
 
 stage_two do
-  append_to_file '.travis.yml', heroku_travis_template
+  append_to_file '.travis.yml', get_file_partial(:heroku, '.travis.yml')
 
   say_wizard 'Login with the Heroku deployer account **not** your personal account!'
   run_command 'heroku auth:logout'
