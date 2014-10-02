@@ -11,7 +11,10 @@ append_to_file '.env', get_file_partial(:webapp, '.env')
 
 get_file 'Procfile'
 get_file 'config/puma.rb'
+
 get_file 'config/initializers/high_voltage.rb'
+get_file 'spec/controllers/high_voltage/pages_controller_spec.rb'
+get_file 'spec/routing/pages_routing_spec.rb'
 
 get_file 'app/assets/images/landing/blue-tile.jpg', eval: false
 get_file 'app/assets/images/landing/meadow.jpg', eval: false
