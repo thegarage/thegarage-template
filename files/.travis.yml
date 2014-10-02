@@ -7,9 +7,6 @@ branches:
   except:
     - /build-.+-\d{4}-\d{2}-\d{2}-.*/
 
-before_script:
-  - rake db:create:all
-
 # create git tag to support quick rollback to last known good state
 before_deploy:
   - git config --global user.email "buildbot@thegarage.us"
