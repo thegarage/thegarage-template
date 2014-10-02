@@ -44,6 +44,6 @@
     "FastClick": false,
     "_kmq": false,
     "mixpanel": false,
-    "ga": false,
+    "ga": false
   }
 }

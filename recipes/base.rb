@@ -33,21 +33,20 @@ stage_two do
   say_wizard 'Adding lib/autoloaded to autoload_paths'
   preserve_directory 'lib/autoloaded'
   environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"
+  commit_changes 'Add lib/autoloaded'
 
   say_wizard 'setting default time zone to Central Time'
   environment "config.time_zone = 'Central Time (US & Canada)'"
+  commit_changes 'default timezone'
 
   run_command 'bundle binstubs spring'
-
-  commit_changes 'Add lib/autoloaded'
+  run_command 'bundle binstubs bundler-updater'
+  run_command 'bundle binstubs bundler-reorganizer'
+  commit_changes 'add binstubs'
 end
 
 stage_three do
-  run_command 'bundle binstubs bundler-updater'
-  run_command 'bin/spring binstubs --all'
-
   say_wizard 'Reorganizing Gemfile groups'
-  run_command 'bundle binstubs bundler-reorganizer'
   run_command 'bin/bundler-reorganizer Gemfile'
 
   say_wizard 'Cleaning up lint issues'

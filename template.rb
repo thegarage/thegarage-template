@@ -93,7 +93,7 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["custom_helpers", "custom_prefs", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
+@recipes = ["custom_helpers", "custom_prefs", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant", "cleanup"]
 @prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"master", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer", :heroku_app_prefix=>"tg"}
 @gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
@@ -351,7 +351,7 @@ end
 # helper to save changes in git
 def commit_changes(description)
   git :add => '-A'
-  git :commit => %Q(-qm "thegarage-template: #{description}")
+  git :commit => %Q(-qm "thegarage-template: [#{@current_recipe}] #{description}")
 end
 
 # insert content into existing file
@@ -508,21 +508,20 @@ stage_two do
   say_wizard 'Adding lib/autoloaded to autoload_paths'
   preserve_directory 'lib/autoloaded'
   environment "config.autoload_paths << config.root.join('lib', 'autoloaded')"
+  commit_changes 'Add lib/autoloaded'
 
   say_wizard 'setting default time zone to Central Time'
   environment "config.time_zone = 'Central Time (US & Canada)'"
+  commit_changes 'default timezone'
 
   run_command 'bundle binstubs spring'
-
-  commit_changes 'Add lib/autoloaded'
+  run_command 'bundle binstubs bundler-updater'
+  run_command 'bundle binstubs bundler-reorganizer'
+  commit_changes 'add binstubs'
 end
 
 stage_three do
-  run_command 'bundle binstubs bundler-updater'
-  run_command 'bin/spring binstubs --all'
-
   say_wizard 'Reorganizing Gemfile groups'
-  run_command 'bundle binstubs bundler-reorganizer'
   run_command 'bin/bundler-reorganizer Gemfile'
 
   say_wizard 'Cleaning up lint issues'
@@ -679,10 +678,10 @@ gem 'jasmine-rails', group: [:development, :test]
 
 get_file '.jshintignore'
 get_file '.jshintrc'
-get_file 'spec/javascript/helpers/spec_helper.js'
-get_file 'spec/javascript/helpers/jasmine_rails_fixture_path.js'
-get_file 'spec/javascript/helpers/stubs/mixpanel.js'
-get_file 'spec/javascript/helpers/stubs/ga.js'
+get_file 'spec/javascripts/helpers/spec_helper.js'
+get_file 'spec/javascripts/helpers/jasmine_rails_fixture_path.js'
+get_file 'spec/javascripts/helpers/stubs/mixpanel.js'
+get_file 'spec/javascripts/helpers/stubs/ga.js'
 
 stage_two do
   generate 'jasmine_rails:install'
@@ -807,22 +806,9 @@ get_file 'config/initializers/add_appname_to_email_subject.rb'
 append_to_file '.env', get_file_partial(:email, '.env')
 append_to_file 'Procfile', get_file_partial(:email, 'Procfile')
 
-smtp_applicationrb = <<-EOS
-config.action_mailer.smtp_settings = {
-      authentication: :plain,
-      enable_starttls_auto: true,
-      address: ENV['SMTP_SERVER'],
-      port: ENV['SMTP_PORT'],
-      domain: ENV['SMTP_DOMAIN'],
-      user_name: ENV['SMTP_LOGIN'],
-      password: ENV['SMTP_PASSWORD']
-    }
-EOS
-
 commit_changes 'Add email config'
 
 stage_two do
-  environment smtp_applicationrb
   run_command 'bundle binstubs mailcatcher'
 
   commit_changes 'Add email config'
@@ -983,6 +969,23 @@ stage_three do
   run 'open http://localhost:3000'
 end
 # >--------------------------- recipes/vagrant.rb ----------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >--------------------------------[ cleanup ]--------------------------------<
+@current_recipe = "cleanup"
+@before_configs["cleanup"].call if @before_configs["cleanup"]
+say_recipe 'cleanup'
+@configs[@current_recipe] = config
+# >--------------------------- recipes/cleanup.rb ----------------------------start<
+
+stage_three do
+  run_command 'bundle exec spring binstub --all'
+  commit_changes 'create binstubs'
+
+  run_command 'git push origin HEAD'
+end
+# >--------------------------- recipes/cleanup.rb ----------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 

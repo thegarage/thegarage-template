@@ -54,7 +54,7 @@ end
 # helper to save changes in git
 def commit_changes(description)
   git :add => '-A'
-  git :commit => %Q(-qm "thegarage-template: #{description}")
+  git :commit => %Q(-qm "thegarage-template: [#{@current_recipe}] #{description}")
 end
 
 # insert content into existing file
