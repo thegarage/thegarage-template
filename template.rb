@@ -971,10 +971,12 @@ stage_two do
   append_to_file 'Guardfile', get_file_partial(:vagrant, 'Guardfile')
 
   run 'bundle package'
-
   commit_changes 'package gems'
+
   run 'vagrant up'
   rake 'db:create'
+  rake 'db:migrate'
+  commit_changes 'prepare database'
 end
 
 stage_three do
