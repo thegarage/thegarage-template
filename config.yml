@@ -13,6 +13,7 @@ recipes:
 - hosting
 - integrations
 - vagrant
+- cleanup
 
 # set of configurable preferences for the template to run
 # change the remote_branch to a feature branch during development
