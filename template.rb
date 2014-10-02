@@ -523,12 +523,18 @@ get_file 'config/initializers/high_voltage.rb'
 
 get_file 'app/assets/images/landing/blue-tile.jpg', eval: false
 get_file 'app/assets/images/landing/meadow.jpg', eval: false
-get_file 'app/assets/stylesheets/application.css.scss', eval: false
-get_file 'app/assets/stylesheets/_framework_and_overrides.scss', eval: false
-get_file 'app/assets/stylesheets/utilities/_mixins.scss', eval: false
-get_file 'app/assets/stylesheets/styles/_landing.scss', eval: false
 
+# ruby script to list all stylesheet files
+# Dir.glob('files/app/assets/stylesheets/**/*').each { |f| puts f.gsub(/^files\//, '') unless File.directory?(f) }
 remove_file 'app/assets/stylesheets/application.css'
+get_file 'app/assets/stylesheets/application.css.scss', eval: false
+get_file 'app/assets/stylesheets/bootstrap-loader.css.scss', eval: false
+get_file 'app/assets/stylesheets/fontawesome-loader.css.scss', eval: false
+get_file 'app/assets/stylesheets/footer.css.scss', eval: false
+get_file 'app/assets/stylesheets/landing.css.scss', eval: false
+get_file 'app/assets/stylesheets/mixins/_respond-only-to.scss', eval: false
+get_file 'app/assets/stylesheets/mixins/_respond-to.scss', eval: false
+get_file 'app/assets/stylesheets/reset.css.scss', eval: false
 
 get_file 'app/views/layouts/_analytics.html.erb'
 get_file 'app/views/layouts/_footer.html.haml', eval: false
