@@ -1,0 +1,10 @@
+footer {
+  background: #f9f9f9;
+  color: #aaa;
+  text-align: center;
+
+  &.section {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}

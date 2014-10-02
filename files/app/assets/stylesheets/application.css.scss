@@ -1,5 +1,10 @@
-@import "framework_and_overrides";
-@import "font-awesome";
-@import "utilities*/**";
-@import "styles*/**";
-
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ */
+@import "bootstrap-loader";
+@import "mixins/**/*";
+@import "**/*";
