@@ -3,8 +3,8 @@
     .row
       .col-sm-12
         &copy;
-        =Time.now.strftime('%Y')
-        #{ENV['COMPANY_NAME']}
+        = Time.now.strftime('%Y')
+        = ENV['COMPANY_NAME']
         \/
         =link_to 'Privacy Policy', page_path('privacy')
         \/
