@@ -93,7 +93,7 @@ module Gemfile
 end
 def add_gem(*all) Gemfile.add(*all); end
 
-@recipes = ["custom_helpers", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
+@recipes = ["custom_helpers", "custom_prefs", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant"]
 @prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"cleanup-helpers", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer", :heroku_app_prefix=>"tg"}
 @gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
@@ -403,7 +403,37 @@ end
 def has_pref?(preference)
   !prefs[preference].to_s.empty?
 end
+
+# request user input to assign preference
+def ask_pref(preference, prompt)
+  prefs[preference] = ask_wizard(prompt)
+end
 # >------------------------ recipes/custom_helpers.rb ------------------------end<
+# >-------------------------- templates/recipe.erb ---------------------------end<
+
+# >-------------------------- templates/recipe.erb ---------------------------start<
+# >-----------------------------[ custom_prefs ]------------------------------<
+@current_recipe = "custom_prefs"
+@before_configs["custom_prefs"].call if @before_configs["custom_prefs"]
+say_recipe 'custom_prefs'
+@configs[@current_recipe] = config
+# >------------------------- recipes/custom_prefs.rb -------------------------start<
+
+say_wizard "Please input all necessary preferences"
+
+ask_pref(:company_name, 'What is the Company Name?')
+ask_pref(:company_domain, 'What is the site domain? (ex: google.com)')
+
+ask_pref(:mixpanel_token_production, 'Mixpanel Token (Production)')
+ask_pref(:mixpanel_token_staging, 'Mixpanel Token (Staging)')
+ask_pref(:mixpanel_token_dev, 'Mixpanel Token (Development)')
+ask_pref(:ga_property, 'Google Analytics Property ID')
+
+ask_pref(:new_relic_license_key, 'New Relic License Key (sandbox)')
+ask_pref(:honeybadger_api_key, 'Honeybadger Project API Key')
+ask_pref(:hipchat_api_key, 'Hipchat Notification API Key')
+ask_pref(:hipchat_room, 'Hipchat Room')
+# >------------------------- recipes/custom_prefs.rb -------------------------end<
 # >-------------------------- templates/recipe.erb ---------------------------end<
 
 # >-------------------------- templates/recipe.erb ---------------------------start<
@@ -552,21 +582,17 @@ get_file 'app/views/pages/home.html.haml', eval: false
 get_file 'app/views/pages/terms.html.haml'
 get_file 'app/views/pages/privacy.html.haml'
 
-prefs[:mixpanel_token_dev] = ask_wizard('Mixpanel Token (Development)')
-if has_pref?(:mixpanel_token_dev)
+if has_pref?(:mixpanel_token_production)
   append_to_file '.env', get_file_partial(:mixpanel, '.env')
   get_file 'app/assets/javascripts/mixpanel-page-viewed.js'
   append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'mixpanel.html', eval: false)
 end
 
-prefs[:ga_property] = ask_wizard('Google Analytics Property ID')
 if has_pref?(:ga_property)
   append_to_file '.env', get_file_partial(:google_analytics, '.env')
   append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'ga.html', eval: false)
 end
 
-prefs[:company_name] = ask_wizard('What is the Company Name?')
-prefs[:company_domain] = ask_wizard('What is the site domain? (ex: google.com)')
 append_to_file '.env', get_file_partial(:project, '.env')
 
 commit_changes "Add webapp config"
@@ -838,7 +864,7 @@ heroku_appname('production').tap do |app|
     run_command "heroku apps:create #{app}"
     run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
     run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Production Token')} --app #{app}"
+    run_command "heroku config:set MIXPANEL_TOKEN=#{prefs[:mixpanel_token_production]} --app #{app}"
   end
   stage_three do
     run_command "open http://#{app}.herokuapp.com"
@@ -852,7 +878,7 @@ heroku_appname('staging').tap do |app|
     run_command "heroku config:set RACK_ENV=staging --app #{app}"
     run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
     run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Staging Token')} --app #{app}"
+    run_command "heroku config:set MIXPANEL_TOKEN=#{prefs[:mixpanel_token_staging]} --app #{app}"
   end
   stage_three do
     run_command "open http://#{app}.herokuapp.com"
@@ -873,7 +899,6 @@ say_recipe 'integrations'
 @configs[@current_recipe] = config
 # >------------------------- recipes/integrations.rb -------------------------start<
 
-prefs[:new_relic_license_key] = ask_wizard('New Relic License Key (sandbox)')
 if has_pref?(:new_relic_license_key)
   gem 'newrelic_rpm'
   gem 'newrelic-rake'
@@ -882,15 +907,12 @@ if has_pref?(:new_relic_license_key)
   append_to_file '.env', get_file_partial(:newrelic, '.env')
 end
 
-prefs[:honeybadger_api_key] = ask_wizard('Honeybadger Project API Key')
 if has_pref?(:honeybadger_api_key)
   gem 'honeybadger'
   get_file 'config/initializers/honeybadger.rb'
   append_to_file '.env', get_file_partial(:honeybadger, '.env')
 end
 
-prefs[:hipchat_api_key] = ask_wizard('Hipchat Notification API Key')
-prefs[:hipchat_room] = ask_wizard('Hipchat Room')
 if has_pref?(:hipchat_api_key) && has_pref?(:hipchat_room)
   append_to_file '.travis.yml', get_file_partial(:hipchat, '.travis.yml')
 end

@@ -39,21 +39,17 @@ get_file 'app/views/pages/home.html.haml', eval: false
 get_file 'app/views/pages/terms.html.haml'
 get_file 'app/views/pages/privacy.html.haml'
 
-prefs[:mixpanel_token_dev] = ask_wizard('Mixpanel Token (Development)')
-if has_pref?(:mixpanel_token_dev)
+if has_pref?(:mixpanel_token_production)
   append_to_file '.env', get_file_partial(:mixpanel, '.env')
   get_file 'app/assets/javascripts/mixpanel-page-viewed.js'
   append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'mixpanel.html', eval: false)
 end
 
-prefs[:ga_property] = ask_wizard('Google Analytics Property ID')
 if has_pref?(:ga_property)
   append_to_file '.env', get_file_partial(:google_analytics, '.env')
   append_to_file 'app/views/layouts/_analytics.html.erb', get_file_partial(:webapp, 'ga.html', eval: false)
 end
 
-prefs[:company_name] = ask_wizard('What is the Company Name?')
-prefs[:company_domain] = ask_wizard('What is the site domain? (ex: google.com)')
 append_to_file '.env', get_file_partial(:project, '.env')
 
 commit_changes "Add webapp config"

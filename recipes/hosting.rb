@@ -24,7 +24,7 @@ heroku_appname('production').tap do |app|
     run_command "heroku apps:create #{app}"
     run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
     run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Production Token')} --app #{app}"
+    run_command "heroku config:set MIXPANEL_TOKEN=#{prefs[:mixpanel_token_production]} --app #{app}"
   end
   stage_three do
     run_command "open http://#{app}.herokuapp.com"
@@ -38,7 +38,7 @@ heroku_appname('staging').tap do |app|
     run_command "heroku config:set RACK_ENV=staging --app #{app}"
     run_command "heroku config:set SECRET_KEY_BASE=#{SecureRandom.hex(64)} --app #{app}"
     run_command "heroku config:set BUNDLE_WITHOUT=development:test:vm:ct:debug:toolbox:ci --app #{app}"
-    run_command "heroku config:set MIXPANEL_TOKEN=#{ask_wizard('Mixpanel Staging Token')} --app #{app}"
+    run_command "heroku config:set MIXPANEL_TOKEN=#{prefs[:mixpanel_token_staging]} --app #{app}"
   end
   stage_three do
     run_command "open http://#{app}.herokuapp.com"

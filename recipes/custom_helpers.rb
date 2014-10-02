@@ -107,6 +107,11 @@ def has_pref?(preference)
   !prefs[preference].to_s.empty?
 end
 
+# request user input to assign preference
+def ask_pref(preference, prompt)
+  prefs[preference] = ask_wizard(prompt)
+end
+
 __END__
 
 name: custom_helpers
