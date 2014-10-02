@@ -1,6 +1,7 @@
 # ordered list of recipes to run
 recipes:
 - custom_helpers
+- custom_prefs
 - git_init
 - base
 - webapp

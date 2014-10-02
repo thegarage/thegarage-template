@@ -1,0 +1,4 @@
+
+# see http://docs.travis-ci.com/user/notifications/#HipChat-notification
+notifications:
+  hipchat: <%= prefs[:hipchat_api_key] %>@<%= prefs[:hipchat_room]%>

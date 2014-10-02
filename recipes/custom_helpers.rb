@@ -102,6 +102,16 @@ def heroku_appname(env)
   [prefs[:heroku_app_prefix], truncated_app_name, env].join('-')
 end
 
+# check if non-empty value exists for preference
+def has_pref?(preference)
+  !prefs[preference].to_s.empty?
+end
+
+# request user input to assign preference
+def ask_pref(preference, prompt)
+  prefs[preference] = ask_wizard(prompt)
+end
+
 __END__
 
 name: custom_helpers
