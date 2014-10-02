@@ -17,8 +17,8 @@ get_file 'app/assets/images/landing/blue-tile.jpg', eval: false
 get_file 'app/assets/images/landing/meadow.jpg', eval: false
 get_file 'app/assets/stylesheets/application.css.scss', eval: false
 get_file 'app/assets/stylesheets/_framework_and_overrides.scss', eval: false
-get_file 'app/assets/stylesheets/utilities/_mixins.css.scss', eval: false
-get_file 'app/assets/stylesheets/styles/landing.css.scss', eval: false
+get_file 'app/assets/stylesheets/utilities/_mixins.scss', eval: false
+get_file 'app/assets/stylesheets/styles/_landing.scss', eval: false
 
 remove_file 'app/assets/stylesheets/application.css'
 

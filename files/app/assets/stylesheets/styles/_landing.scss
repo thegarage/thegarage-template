@@ -21,8 +21,8 @@ h1, h2, h3, h4, h5 {
   z-index: 1;
   background-color: #216888;
   background:
-    url(/assets/landing/meadow.jpg) no-repeat top center fixed,
-    url(/assets/landing/blue-tile.jpg) repeat;
+    image-url('/assets/landing/meadow.jpg') no-repeat top center fixed,
+    image-url('/assets/landing/blue-tile.jpg') repeat;
   color: #fff;
   text-align: center;
   padding: 40px 0;
