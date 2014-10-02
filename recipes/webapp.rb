@@ -54,7 +54,7 @@ end
 
 prefs[:company_name] = ask_wizard('What is the Company Name?')
 prefs[:company_domain] = ask_wizard('What is the site domain? (ex: google.com)')
-append_to_file '.env', get_file_partial(:project, '.env'
+append_to_file '.env', get_file_partial(:project, '.env')
 
 commit_changes "Add webapp config"
 
