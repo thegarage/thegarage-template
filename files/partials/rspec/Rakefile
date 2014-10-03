@@ -1,0 +1,3 @@
+# define ci as default rake task
+Rake::Task[:default].clear rescue nil
+task default: :ci

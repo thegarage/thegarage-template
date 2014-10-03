@@ -3,7 +3,7 @@ task :ci => ['ci:setup', 'db:create:all', :spec, :rubocop, 'spec:javascript', :j
 
 namespace :ci do
   task :setup do
-    ENV['RAILS_ENV'] = 'test'
+    ENV['RACK_ENV'] = ENV['RAILS_ENV'] = 'test'
     Bundler.require(:ci)
   end
 end
