@@ -1,3 +1,8 @@
-# define ci as default rake task
-Rake::Task[:default].clear rescue nil
+# remove current default task definition
+Rake::TaskManager.class_eval do
+  def remove_task(task_name)
+    @tasks.delete(task_name.to_s)
+  end
+end
+Rake.application.remove_task(:default)
 task default: :ci
