@@ -64,7 +64,9 @@
           The laws of the State of Minnesota govern these Terms and any cause of action arising under or relating to your use of the website, without reference to its choice-of-law principles. You agree that the only proper jurisdiction and venue for any dispute with the Company, or in any way relating to your use of this website, is in the state and federal courts in the State of Minnesota, U.S.A. You further agree and consent to the exercise of personal jurisdiction in these courts in connection with any dispute involving the Company or its employees, officers, directors, agents and providers. If any provision of these Terms is determined to be invalid under any applicable statute or rule of law, such provision is to that extent to be deemed omitted, and the balance of the Agreement shall remain enforceable. Before seeking legal recourse for any harm you believe you have suffered arising from or related to your use of this website, you agree to inform us in writing and to give us 30 days to cure the harm before initiating any action. You must initiate any cause of action within one year after the claim has arisen, or you will be barred from pursuing any cause of action.
 
         %h3 CONTACT US
-        %p= "To contact us regarding these Terms or the operation of the website itself, contact us at: #{ActionMailer::Base.default[:from]}"
+        %p
+          To contact us regarding these Terms or the operation of the website itself, contact us at:
+          = mail_to(ENV['COMPANY_SUPPORT_ADDRESS'])
 
         %h3 EFFECTIVE DATE
         %p The Effective Date of these Terms is <%= Time.now.strftime('%B %d, %Y') %>.

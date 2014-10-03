@@ -66,7 +66,9 @@
         We will not intentionally collect any personal information from children under the age of 13 through this website without receiving verifiable parental consent. If you think that we have collected personal information from a child under the age of 13 through this website, please contact us.
 
       %h3 CONTACT US
-      %p= "To contact us regarding this Website Privacy Policy and our related privacy practices, please contact us at: #{ActionMailer::Base.default[:from]}"
+      %p
+        To contact us regarding this Website Privacy Policy and our related privacy practices, please contact us at
+        = mail_to(ENV['COMPANY_SUPPORT_ADDRESS'])
 
       %h3 EFFECTIVE DATE
       %p The Effective Date of this Privacy Policy is <%= Time.now.strftime('%B %d, %Y') %>.
