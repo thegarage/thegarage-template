@@ -1,4 +1,5 @@
 require 'rails_helper'
+
 describe HighVoltage::PagesController do
   describe '#show' do
     HighVoltage.pages.each do |page|
