@@ -1,9 +1,11 @@
-%footer
+%footer.section
   .container
     .row
       .col-sm-12
-        &copy; <%= Time.now.strftime('%Y') %> #{ENV['COMPANY_NAME']} /
+        &copy;
+        = Time.now.strftime('%Y')
+        = ENV['COMPANY_NAME']
+        \/
         =link_to 'Privacy Policy', page_path('privacy')
         \/
         =link_to 'Terms of Use', page_path('terms')
-
