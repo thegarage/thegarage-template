@@ -24,7 +24,7 @@ stage_two do
   generate 'rspec:install'
   environment get_file_partial(:rspec, 'application.rb')
 
-  uncomment_lines 'spec/rails_helper.rb', /spec\/support/
+  uncomment_lines 'spec/rails_helper.rb', /spec\/support.*require/
   comment_lines 'spec/spec_helper.rb', /config.fixture_path.*/
 
   prepend_to_file 'spec/spec_helper.rb', get_file_partial(:simplecov, 'spec_helper.rb')
