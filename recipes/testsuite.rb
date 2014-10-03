@@ -12,16 +12,8 @@ gem_group :test do
   gem 'timecop'
   gem 'email_spec'
   gem 'webmock'
+  gem 'capybara'
 end
-
-rspec_config_generators = <<-EOS
-config.generators do |g|
-      g.view_specs false
-      g.stylesheets = false
-      g.javascripts = false
-      g.helper = false
-    end
-EOS
 
 %w( capybara email_spec jasmine_rails render_views timecop vcr webmock ).each do |file|
   get_file "spec/support/#{file}.rb"
@@ -30,8 +22,9 @@ end
 stage_two do
   remove_dir 'test/' unless ARGV.include?("-T")
   generate 'rspec:install'
-  environment rspec_config_generators
+  environment get_file_partial(:rspec, 'application.rb')
 
+  uncomment_lines 'spec/rails_helper.rb', /spec\/support.*require/
   comment_lines 'spec/spec_helper.rb', /config.fixture_path.*/
 
   prepend_to_file 'spec/spec_helper.rb', get_file_partial(:simplecov, 'spec_helper.rb')
