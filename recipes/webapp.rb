@@ -7,6 +7,9 @@ gem 'high_voltage'
 gem 'font-awesome-rails'
 gem 'waitlist'
 
+insert_lines_into_file 'Gemfile', "source 'https://rails-assets.org'", after: /^source /
+gem 'rails-assets-respond'
+
 append_to_file '.env', get_file_partial(:webapp, '.env')
 
 get_file 'Procfile'
