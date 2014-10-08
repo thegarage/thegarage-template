@@ -94,7 +94,7 @@ end
 def add_gem(*all) Gemfile.add(*all); end
 
 @recipes = ["custom_helpers", "custom_prefs", "git_init", "base", "webapp", "testsuite", "rails_javascript", "continuous_integration", "continuous_testing", "email_init", "hosting", "integrations", "vagrant", "cleanup"]
-@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"master", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer", :heroku_app_prefix=>"tg"}
+@prefs = {:remote_host=>"https://raw.github.com/thegarage/thegarage-template", :remote_branch=>"fix-sass-import", :github_organization=>"thegarage", :github_deployer_account=>"thegarage-deployer", :heroku_app_prefix=>"tg"}
 @gems = ["bundler"]
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["email", "example", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "testing"], ["apps4", "core", "deployment", "email", "extras", "frontend", "gems", "git", "init", "railsapps", "readme", "setup", "tests"], ["apps4", "core", "deployment", "devise", "email", "extras", "frontend", "gems", "git", "init", "omniauth", "pundit", "railsapps", "readme", "setup", "tests"]]
 @diagnostics_prefs = []
@@ -548,6 +548,10 @@ gem 'simple_form'
 gem 'high_voltage'
 gem 'font-awesome-rails'
 gem 'waitlist'
+gem 'rspec-respect_selector_limit', group: 'test'
+
+insert_lines_into_file 'Gemfile', "source 'https://rails-assets.org'", after: /^source /
+gem 'rails-assets-respond'
 
 append_to_file '.env', get_file_partial(:webapp, '.env')
 
