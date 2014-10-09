@@ -14,4 +14,5 @@
 //= require jquery_ujs
 //= require bootstrap-sprockets
 //= require respond/respond.min
+//= require jquery-placeholder
 //= require_tree .
