@@ -1,3 +1,4 @@
+
 # remove current default task definition
 Rake::TaskManager.class_eval do
   def remove_task(task_name)

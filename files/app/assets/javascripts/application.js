@@ -13,5 +13,5 @@
 //= require jquery
 //= require jquery_ujs
 //= require bootstrap-sprockets
-//= require respond
+//= require respond/respond.min
 //= require_tree .

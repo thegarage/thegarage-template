@@ -19,7 +19,7 @@ get_file 'lib/tasks/rubocop.rake'
 get_file 'lib/tasks/jshint.rake'
 
 get_file '.travis.yml'
-append_to_file 'Rakefile', "\ntask default: :ci\n"
+append_to_file 'Rakefile', get_file_partial(:continuous_integration, 'Rakefile')
 
 commit_changes 'Add continuous integration config'
 
