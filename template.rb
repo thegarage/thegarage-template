@@ -549,6 +549,7 @@ gem 'high_voltage'
 gem 'font-awesome-rails'
 gem 'waitlist'
 gem 'rspec-respect_selector_limit', group: 'test'
+gem 'jquery-placeholder-rails'
 
 insert_lines_into_file 'Gemfile', "source 'https://rails-assets.org'", after: /^source /
 gem 'rails-assets-respond'
