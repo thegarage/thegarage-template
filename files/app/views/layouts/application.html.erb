@@ -10,6 +10,11 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
+    <%- if content_for?(:header) %>
+      <%= yield :header %>
+    <%- else %>
+      <%= render 'layouts/header' %>
+    <%- end %>
     <%= render 'layouts/messages' %>
     <%= yield %>
 

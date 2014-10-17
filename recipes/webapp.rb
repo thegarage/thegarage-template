@@ -40,8 +40,7 @@ get_file 'app/assets/stylesheets/reset.css.scss', eval: false
 get_file 'app/views/layouts/_analytics.html.erb'
 get_file 'app/views/layouts/_footer.html.haml', eval: false
 get_file 'app/views/layouts/_messages.html.erb', eval: false
-get_file 'app/views/layouts/_navigation.html.erb', eval: false
-get_file 'app/views/layouts/_navigation_links.html.erb', eval: false
+get_file 'app/views/layouts/_header.html.erb', eval: false
 get_file 'app/views/layouts/application.html.erb', eval: false
 
 get_file 'app/views/pages/home.html.haml', eval: false
