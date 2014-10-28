@@ -635,7 +635,10 @@ gem_group :development, :test do
   gem 'rspec-rails'
   gem 'factory_girl_rails'
 end
-gem 'spring-commands-rspec', group: :development
+gem_group :development do
+  gem 'spring-commands-rspec'
+  gem 'rack-mini-profiler'
+end
 gem_group :test do
   gem 'simplecov', require: false
   gem 'shoulda-matchers'
