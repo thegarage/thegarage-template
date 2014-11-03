@@ -7,7 +7,7 @@
     - gemrc
     - nodejs
     - { role: set_locale, sudo: yes }
-    - { role: ruby, ruby_version: 2.1.3 }
+    - { role: ruby, ruby_version: 2.1.4 }
     - { role: postgresql, sudo: yes }
     - { role: phantomjs, sudo: yes }
     - { role: rails_setup, sudo: yes }
