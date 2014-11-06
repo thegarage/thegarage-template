@@ -1,10 +1,7 @@
 #!/bin/bash
 
 # ensure all gems are installed
-vagrant ssh -c 'cd /vagrant && bundle install --local'
-
-# Restart development server upstart jobs
-vagrant ssh -c 'sudo restart app'
+vagrant ssh -c '/vagrant/bin/vm_restart'
 
 # restart spring application preloader
 bin/spring stop

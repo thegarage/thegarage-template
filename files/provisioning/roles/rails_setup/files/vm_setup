@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Restart postgres, required for some reason for connecting from host
+# the first time VM is built
+sudo service postgresql restart
+
+# setup clean rails environment
+su vagrant -l bin/vm_restart

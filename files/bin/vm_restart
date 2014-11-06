@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# install gems
+cd /vagrant && bundle install --local
+
+# regenerate upstart script to pickup new ENV variables
+sudo /vagrant/bin/foreman export upstart /etc/init --user vagrant
+
+# start or restart app as necessary
+sudo stop app >/dev/null || true
+sudo start app
