@@ -582,8 +582,7 @@ get_file 'app/assets/stylesheets/reset.css.scss', eval: false
 get_file 'app/views/layouts/_analytics.html.erb'
 get_file 'app/views/layouts/_footer.html.haml', eval: false
 get_file 'app/views/layouts/_messages.html.erb', eval: false
-get_file 'app/views/layouts/_navigation.html.erb', eval: false
-get_file 'app/views/layouts/_navigation_links.html.erb', eval: false
+get_file 'app/views/layouts/_header.html.erb', eval: false
 get_file 'app/views/layouts/application.html.erb', eval: false
 
 get_file 'app/views/pages/home.html.haml', eval: false
@@ -927,6 +926,8 @@ get_file 'config/database.yml'
 
 get_file 'bin/restart'
 chmod 'bin/restart', 0755
+get_file 'bin/vm_restart'
+chmod 'bin/vm_restart', 0755
 
 # ruby script to get list of all necessary provisioning files
 # Dir.glob('files/provisioning/**/*').each { |f| puts f.gsub(/^files\//, '') unless File.directory?(f) }
@@ -960,6 +961,7 @@ stage_two do
   append_to_file 'Guardfile', get_file_partial(:vagrant, 'Guardfile')
 
   run 'bundle package'
+  run_cmd 'bundle binstubs foreman'
   commit_changes 'package gems'
 
   run 'vagrant up'
