@@ -5,4 +5,4 @@
 sudo service postgresql restart
 
 # setup clean rails environment
-su vagrant -l bin/vm_restart
+su vagrant -l /vagrant/bin/vm_restart
