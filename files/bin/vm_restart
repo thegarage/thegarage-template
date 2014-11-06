@@ -7,5 +7,5 @@ cd /vagrant && bundle install --local
 sudo /vagrant/bin/foreman export upstart /etc/init --user vagrant
 
 # start or restart app as necessary
-sudo stop app >/dev/null || true
-sudo start app
+sudo service app stop >/dev/null || true
+sudo service app start
