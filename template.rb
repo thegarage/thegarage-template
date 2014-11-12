@@ -943,7 +943,7 @@ recipes = %w(
   provisioning/roles/postgresql/handlers/main.yml
   provisioning/roles/postgresql/tasks/main.yml
   provisioning/roles/postgresql/vars/main.yml
-  provisioning/roles/rails_setup/files/vm_rails_setup.sh
+  provisioning/roles/rails_setup/files/vm_setup
   provisioning/roles/rails_setup/tasks/main.yml
   provisioning/roles/ruby/tasks/main.yml
   provisioning/roles/ruby/templates/rbenv.sh.j2
