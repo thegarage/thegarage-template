@@ -961,7 +961,7 @@ stage_two do
   append_to_file 'Guardfile', get_file_partial(:vagrant, 'Guardfile')
 
   run 'bundle package'
-  run_cmd 'bundle binstubs foreman'
+  run_command 'bundle binstubs foreman'
   commit_changes 'package gems'
 
   run 'vagrant up'
