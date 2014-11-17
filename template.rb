@@ -562,7 +562,7 @@ get_file 'config/puma.rb'
 get_file 'config/initializers/high_voltage.rb'
 get_file 'spec/controllers/high_voltage/pages_controller_spec.rb'
 get_file 'spec/routing/pages_routing_spec.rb'
-get_file 'spec/integration/css_selector_spec.rb'
+get_file 'spec/assets/precompiled_css_files_spec.rb'
 
 get_file 'app/assets/images/landing/blue-tile.jpg', eval: false
 get_file 'app/assets/images/landing/meadow.jpg', eval: false
@@ -961,7 +961,7 @@ stage_two do
   append_to_file 'Guardfile', get_file_partial(:vagrant, 'Guardfile')
 
   run 'bundle package'
-  run_cmd 'bundle binstubs foreman'
+  run_command 'bundle binstubs foreman'
   commit_changes 'package gems'
 
   run 'vagrant up'
