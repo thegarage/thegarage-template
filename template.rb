@@ -917,7 +917,7 @@ say_recipe 'vagrant'
 @configs[@current_recipe] = config
 # >--------------------------- recipes/vagrant.rb ----------------------------start<
 
-gem 'guard-sheller', group: :ct
+gem 'guard-shellexec', group: :ct
 
 append_to_file '.gitignore', get_file_partial(:vagrant, '.gitignore')
 append_to_file '.env', get_file_partial(:vagrant, '.env')
