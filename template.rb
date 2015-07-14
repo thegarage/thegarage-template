@@ -478,7 +478,7 @@ get_file 'CONTRIBUTING.md'
 get_file 'README.md'
 create_file '.env', ''
 
-ruby_version = '2.1.5'
+ruby_version = '2.2.2'
 say_wizard "Configuring app to use ruby #{ruby_version}"
 create_file '.ruby-version', "#{ruby_version}\n"
 insert_lines_into_file 'Gemfile', "ruby '#{ruby_version}'", after: /^source /
