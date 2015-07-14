@@ -9,3 +9,5 @@
     - git
     - curl
     - libsqlite3-dev
+    - libfontconfig1
+    - libffi-dev
